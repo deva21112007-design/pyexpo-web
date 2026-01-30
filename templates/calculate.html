@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculate - Smart Steroid Safety Analyzer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<div class="main-container">
+    <header>
+        <div class="header-content">
+            <h1><i class="fas fa-shield-alt"></i> Steroid Detection & Safety System</h1>
+            <p>Ensuring safe milk and meat for human consumption</p>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <ul class="nav-links">
+            <li><a href="/"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="/calculate" class="active"><i class="fas fa-calculator"></i> Calculate</a></li>
+            <li><a href="/feedback"><i class="fas fa-comments"></i> Feedback</a></li>
+        </ul>
+    </nav>
+
+    <!-- Input Card -->
+    <div class="card input-card">
+        <form method="post">
+            <h2><i class="fas fa-flask"></i> Sensor Analysis</h2>
+            
+            <div class="input-group">
+                <label><i class="fas fa-microscope"></i> Sensor Reading (mg/L)</label>
+                <input type="number" step="0.01" name="sensor" placeholder="Enter sensor value" required>
+                <small>Enter the sensor reading value</small>
+            </div>
+
+            <div class="input-group">
+                <label><i class="fas fa-weight"></i> Animal Weight / Milk Quantity (kg/L)</label>
+                <input type="number" step="0.1" name="weight" placeholder="Enter weight or quantity" required>
+                <small>Enter the weight or quantity measurement</small>
+            </div>
+
+            <button type="submit" class="btn-primary">
+                <i class="fas fa-play-circle"></i> Analyze Steroid Level
+            </button>
+        </form>
+    </div>
+
+    <!-- Result Card -->
+    {% if result %}
+    <div class="card result-card">
+        <div class="result-header">
+            <h2><i class="fas fa-chart-pie"></i> Analysis Result</h2>
+        </div>
+        
+        <div class="result-grid">
+            <div class="result-item">
+                <span class="result-label">Detected Steroid Level</span>
+                <span class="result-value">{{ result.detected }} mg/L</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Safe Dosage</span>
+                <span class="result-value">{{ result.safe_dose }} mg</span>
+            </div>
+        </div>
+        
+        <div class="status-section">
+            <p class="status-label">Status:</p>
+            <div class="status-badge {{ result.level }}">
+                <i class="fas fa-exclamation-circle"></i>
+                {{ warning }}
+            </div>
+        </div>
+        
+        {% if result.detected %}
+        <div class="graph-container">
+            <img src="{{ url_for('static', filename='steroid_graph.png') }}" alt="Steroid Graph">
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <footer>
+        <p><i class="fas fa-heartbeat"></i> Protecting Public Health with Smart Technology</p>
+    </footer>
+</div>
+
+</body>
+</html>

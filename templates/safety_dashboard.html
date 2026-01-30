@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safety Dashboard - Steroid Detection System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+    <div class="main-container">
+        <header role="banner">
+            <div class="header-content">
+                <h1><i class="fas fa-shield-alt" aria-hidden="true"></i> Steroid Detection & Safety System</h1>
+                <p>Ensuring safe milk and meat for human consumption</p>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="navbar" role="navigation" aria-label="Main navigation">
+            <ul class="nav-links">
+                <li><a href="/" class="active" aria-current="page"><i class="fas fa-chart-line" aria-hidden="true"></i>
+                        Safety Dashboard</a></li>
+                <li><a href="/detection-testing" aria-label="Go to Detection Testing page"><i class="fas fa-flask"
+                            aria-hidden="true"></i> Detection Testing</a></li>
+                <li><a href="/community-reviews" aria-label="Go to Community Reviews page"><i class="fas fa-star"
+                            aria-hidden="true"></i> Community Reviews</a></li>
+            </ul>
+        </nav>
+
+        <!-- Quick Actions - Now at Top -->
+        <section class="quick-actions quick-actions-top" aria-labelledby="actions-heading">
+            <h2 id="actions-heading">Quick Actions</h2>
+            <div class="action-buttons">
+                <a href="/detection-testing" class="btn-primary btn-large" aria-label="Start new detection test">
+                    <i class="fas fa-play-circle" aria-hidden="true"></i> Start Detection Test
+                </a>
+                <a href="/community-reviews" class="btn-primary btn-large btn-secondary"
+                    aria-label="View community reviews">
+                    <i class="fas fa-comments" aria-hidden="true"></i> View Reviews
+                </a>
+            </div>
+        </section>
+
+        <!-- Bottom Sections: Statistics + Features Side by Side -->
+        <div class="bottom-sections-wrapper">
+            <!-- System Statistics - Full Width -->
+            <section class="statistics-section" aria-labelledby="stats-heading">
+                <h2 id="stats-heading">System Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat-card" role="region" aria-label="Total Analyses">
+                        <i class="fas fa-flask-vial" aria-hidden="true"></i>
+                        <div class="stat-content">
+                            <p class="stat-label">Total Analyses</p>
+                            <p class="stat-value" tabindex="0">{{ stats.total_analyses }}</p>
+                        </div>
+                    </div>
+                    <div class="stat-card" role="region" aria-label="Safe Samples">
+                        <i class="fas fa-check-circle" aria-hidden="true"></i>
+                        <div class="stat-content">
+                            <p class="stat-label">Safe Samples</p>
+                            <p class="stat-value" tabindex="0">{{ stats.safe_samples }}</p>
+                        </div>
+                    </div>
+                    <div class="stat-card" role="region" aria-label="Danger Samples">
+                        <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+                        <div class="stat-content">
+                            <p class="stat-label">Danger Samples</p>
+                            <p class="stat-value" tabindex="0">{{ stats.danger_samples }}</p>
+                        </div>
+                    </div>
+                    <div class="stat-card" role="region" aria-label="User Rating">
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <div class="stat-content">
+                            <p class="stat-label">Avg User Rating</p>
+                            <p class="stat-value" tabindex="0">{{ stats.avg_rating }}/5</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Features Overview -->
+            <section class="features-section" aria-labelledby="features-heading">
+                <h2 id="features-heading">System Features</h2>
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <i class="fas fa-bolt" aria-hidden="true"></i>
+                        <h3>Real-Time Detection</h3>
+                        <p>Instant analysis of steroid levels in samples</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-chart-line" aria-hidden="true"></i>
+                        <h3>Visual Analytics</h3>
+                        <p>Comprehensive graphs and trend analysis</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-lock" aria-hidden="true"></i>
+                        <h3>Safety Certified</h3>
+                        <p>Meets international safety standards</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-users" aria-hidden="true"></i>
+                        <h3>Community Driven</h3>
+                        <p>Share feedback and learn from others</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <footer role="contentinfo">
+            <p><i class="fas fa-heartbeat" aria-hidden="true"></i> Protecting Public Health with Smart Technology</p>
+        </footer>
+    </div>
+
+</body>
+
+</html>

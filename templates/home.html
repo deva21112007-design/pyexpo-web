@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Smart Steroid Safety Analyzer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<div class="main-container">
+    <header>
+        <div class="header-content">
+            <h1><i class="fas fa-shield-alt"></i> Steroid Detection & Safety System</h1>
+            <p>Ensuring safe milk and meat for human consumption</p>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <ul class="nav-links">
+            <li><a href="/" class="active"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="/calculate"><i class="fas fa-calculator"></i> Calculate</a></li>
+            <li><a href="/feedback"><i class="fas fa-comments"></i> Feedback</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <h2>Welcome to the Smart Steroid Safety Analyzer</h2>
+            <p>Advanced detection system for monitoring steroid levels in food products</p>
+            <a href="/calculate" class="btn-primary btn-large">
+                <i class="fas fa-play-circle"></i> Start Analysis
+            </a>
+        </div>
+    </section>
+
+    <!-- Info Cards -->
+    <div class="info-cards">
+        <div class="info-card">
+            <i class="fas fa-beaker"></i>
+            <h3>Advanced Detection</h3>
+            <p>Real-time steroid analysis using sensor technology</p>
+        </div>
+        <div class="info-card">
+            <i class="fas fa-check-circle"></i>
+            <h3>Safety Verified</h3>
+            <p>Certified protection system for public health</p>
+        </div>
+        <div class="info-card">
+            <i class="fas fa-chart-line"></i>
+            <h3>Data Driven</h3>
+            <p>Precise measurements with visual analytics</p>
+        </div>
+        <div class="info-card">
+            <i class="fas fa-brain"></i>
+            <h3>Smart Analysis</h3>
+            <p>Intelligent classification and recommendations</p>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <h2>Key Features</h2>
+        <div class="features-grid">
+            <div class="feature-item">
+                <i class="fas fa-flask-vial"></i>
+                <h4>Sensor Integration</h4>
+                <p>Compatible with advanced steroid detection sensors</p>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-chart-bar"></i>
+                <h4>Visual Reports</h4>
+                <p>Generate detailed graphs and trend analysis</p>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-shield-virus"></i>
+                <h4>Safety Alerts</h4>
+                <p>Real-time warnings when levels exceed safe limits</p>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-database"></i>
+                <h4>Data Storage</h4>
+                <p>Track and store all analysis records</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Safe Limits Info -->
+    <section class="limits-section">
+        <h2>Safety Limits & Standards</h2>
+        <div class="limits-info">
+            <div class="limit-card">
+                <h4>Safe Limit (mg/L)</h4>
+                <p class="limit-value">0.5 mg/L</p>
+                <p>Maximum allowed steroid concentration</p>
+            </div>
+            <div class="limit-card">
+                <h4>Recommended Dose (mg/kg)</h4>
+                <p class="limit-value">0.02 mg/kg</p>
+                <p>Safe dosage per animal weight</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p><i class="fas fa-heartbeat"></i> Protecting Public Health with Smart Technology</p>
+    </footer>
+</div>
+
+</body>
+</html>

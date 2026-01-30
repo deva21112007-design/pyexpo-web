@@ -1,0 +1,138 @@
+[
+  {
+    "timestamp": "2026-01-29 12:08:42",
+    "sensor_value": 15.0,
+    "weight": 2.5,
+    "detected_level": 0.45,
+    "safe_dose": 0.05,
+    "level": "caution"
+  },
+  {
+    "timestamp": "2026-01-29 14:43:43",
+    "sensor_value": 567.8,
+    "weight": 2.5,
+    "detected_level": 17.034,
+    "safe_dose": 0.05,
+    "level": "danger"
+  },
+  {
+    "timestamp": "2026-01-29 14:44:19",
+    "sensor_value": 25.8,
+    "weight": 2.5,
+    "detected_level": 0.774,
+    "safe_dose": 0.05,
+    "level": "danger"
+  },
+  {
+    "timestamp": "2026-01-29 14:44:33",
+    "sensor_value": 12.8,
+    "weight": 2.5,
+    "detected_level": 0.384,
+    "safe_dose": 0.05,
+    "level": "caution"
+  },
+  {
+    "timestamp": "2026-01-29 15:13:13",
+    "sensor_value": 12.5,
+    "weight": 2.5,
+    "detected_level": 0.375,
+    "safe_dose": 0.05,
+    "level": "caution"
+  },
+  {
+    "timestamp": "2026-01-29 15:13:29",
+    "sensor_value": 13.5,
+    "weight": 1.5,
+    "detected_level": 0.405,
+    "safe_dose": 0.03,
+    "level": "caution"
+  },
+  {
+    "timestamp": "2026-01-29 15:16:35",
+    "sensor_value": 8.5,
+    "weight": 2.5,
+    "detected_level": 0.255,
+    "safe_dose": 0.05,
+    "level": "safe"
+  },
+  {
+    "timestamp": "2026-01-29 15:16:53",
+    "sensor_value": 8.5,
+    "weight": 0.4,
+    "detected_level": 0.255,
+    "safe_dose": 0.008,
+    "level": "safe"
+  },
+  {
+    "timestamp": "2026-01-29 15:20:17",
+    "sensor_value": 12.5,
+    "weight": 0.5,
+    "detected_level": 0.375,
+    "safe_dose": 0.01,
+    "level": "caution"
+  },
+  {
+    "timestamp": "2026-01-29 15:24:27",
+    "sensor_value": 12.5,
+    "weight": 2.5,
+    "detected_level": 0.375,
+    "safe_dose": 0.05,
+    "level": "caution"
+  },
+  {
+    "timestamp": "2026-01-29 15:38:00",
+    "sensor_value": 6.5,
+    "weight": 0.3,
+    "detected_level": 0.195,
+    "safe_dose": 0.006,
+    "level": "safe"
+  },
+  {
+    "timestamp": "2026-01-29 15:39:46",
+    "sensor_value": 6.5,
+    "weight": 0.4,
+    "detected_level": 0.195,
+    "safe_dose": 0.008,
+    "level": "safe"
+  },
+  {
+    "timestamp": "2026-01-29 15:52:11",
+    "sensor_value": 30.0,
+    "weight": 400.0,
+    "detected_level": 0.9,
+    "safe_dose": 8.0,
+    "level": "danger"
+  },
+  {
+    "timestamp": "2026-01-29 15:52:43",
+    "sensor_value": 30.0,
+    "weight": 1000.0,
+    "detected_level": 0.9,
+    "safe_dose": 20.0,
+    "level": "danger"
+  },
+  {
+    "timestamp": "2026-01-29 15:53:01",
+    "sensor_value": 10.0,
+    "weight": 950.0,
+    "detected_level": 0.3,
+    "safe_dose": 19.0,
+    "level": "safe"
+  },
+  {
+    "timestamp": "2026-01-29 15:54:10",
+    "sensor_value": 40.0,
+    "weight": 900.0,
+    "detected_level": 1.2,
+    "safe_dose": 18.0,
+    "level": "danger"
+  },
+  {
+    "timestamp": "2026-01-29 19:15:08",
+    "sensor_value": 3.5,
+    "weight": 5.0,
+    "detected_level": 0.105,
+    "safe_dose": 0.1,
+    "level": "safe"
+  }
+]

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detection Testing - Steroid Detection System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+    <div class="main-container">
+        <header role="banner">
+            <div class="header-content">
+                <h1><i class="fas fa-shield-alt" aria-hidden="true"></i> Steroid Detection & Safety System</h1>
+                <p>Ensuring safe milk and meat for human consumption</p>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="navbar" role="navigation" aria-label="Main navigation">
+            <ul class="nav-links">
+                <li><a href="/" aria-label="Go to Safety Dashboard"><i class="fas fa-chart-line" aria-hidden="true"></i>
+                        Safety Dashboard</a></li>
+                <li><a href="/detection-testing" class="active" aria-current="page"><i class="fas fa-flask"
+                            aria-hidden="true"></i> Detection Testing</a></li>
+                <li><a href="/community-reviews" aria-label="Go to Community Reviews page"><i class="fas fa-star"
+                            aria-hidden="true"></i> Community Reviews</a></li>
+            </ul>
+        </nav>
+
+        <!-- Input Card -->
+        <div class="card input-card" role="region" aria-labelledby="test-heading">
+            <form method="post" aria-labelledby="test-heading">
+                <h2 id="test-heading"><i class="fas fa-flask" aria-hidden="true"></i> Sample Analysis Test</h2>
+
+                <div class="input-group">
+                    <label for="sensor"><i class="fas fa-microscope" aria-hidden="true"></i> Sensor Reading
+                        (mg/L)</label>
+                    <input type="number" id="sensor" step="0.01" name="sensor" placeholder="Enter sensor value" required
+                        aria-label="Sensor reading value in mg/L">
+                </div>
+
+                <div class="input-group">
+                    <label for="weight"><i class="fas fa-weight" aria-hidden="true"></i> Sample Weight / Quantity
+                        (kg/L)</label>
+                    <input type="number" id="weight" step="0.1" name="weight" placeholder="Enter weight or quantity"
+                        required aria-label="Sample weight or quantity">
+                </div>
+
+                <button type="submit" class="btn-primary" aria-label="Submit form to analyze steroid level">
+                    <i class="fas fa-play-circle" aria-hidden="true"></i> Analyze Steroid Level
+                </button>
+            </form>
+        </div>
+
+        <!-- Result Card -->
+        {% if result %}
+        <div id="result-section" class="card result-card result-animate" role="region" aria-labelledby="result-heading">
+            <div class="result-header">
+                <h2 id="result-heading"><i class="fas fa-chart-pie" aria-hidden="true"></i> Analysis Result</h2>
+            </div>
+
+            <div class="result-grid">
+                <div class="result-item">
+                    <span class="result-label">Detected Steroid Level</span>
+                    <span class="result-value" tabindex="0"
+                        aria-label="Detected steroid level: {{ result.detected }} mg/L">{{ result.detected }}
+                        mg/L</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Safe Dosage Limit</span>
+                    <span class="result-value" tabindex="0" aria-label="Safe dosage: {{ result.safe_dose }} mg">{{
+                        result.safe_dose }} mg</span>
+                </div>
+            </div>
+
+            <div class="status-section">
+                <p class="status-label">Safety Status:</p>
+                <div class="status-badge {{ result.level }}" role="status" aria-label="Safety status: {{ warning }}">
+                    <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
+                    {{ warning }}
+                </div>
+            </div>
+
+            {% if result.detected %}
+            <div class="graph-container" role="region" aria-label="Steroid level trend graph">
+                <img src="{{ url_for('static', filename='steroid_graph.png') }}"
+                    alt="Steroid Level Analysis - Trend Graph showing detected level vs safe limit">
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <footer role="contentinfo">
+            <p><i class="fas fa-heartbeat" aria-hidden="true"></i> Protecting Public Health with Smart Technology</p>
+        </footer>
+    </div>
+
+    {% if result %}
+    <script>
+        // Smooth scroll to results when page loads with a result
+        window.addEventListener('DOMContentLoaded', (event) => {
+            const resultSection = document.getElementById('result-section');
+            if (resultSection) {
+                // Small delay to ensure everything is rendered
+                setTimeout(() => {
+                    resultSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }, 100);
+            }
+        });
+    </script>
+    {% endif %}
+
+</body>
+
+</html>

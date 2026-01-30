@@ -1,6 +1,10 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import os
+import json
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -8,8 +12,54 @@ app = Flask(__name__)
 SAFE_LIMIT_MG_L = 0.5
 RECOMMENDED_MG_KG = 0.02
 
-@app.route("/", methods=["GET", "POST"])
-def index():
+# Store feedback
+FEEDBACK_FILE = "feedback_data.json"
+ANALYSIS_HISTORY_FILE = "analysis_history.json"
+
+def load_feedback():
+    if os.path.exists(FEEDBACK_FILE):
+        with open(FEEDBACK_FILE, "r") as f:
+            return json.load(f)
+    return []
+
+def save_feedback(feedback_list):
+    with open(FEEDBACK_FILE, "w") as f:
+        json.dump(feedback_list, f, indent=2)
+
+def load_analysis_history():
+    if os.path.exists(ANALYSIS_HISTORY_FILE):
+        with open(ANALYSIS_HISTORY_FILE, "r") as f:
+            return json.load(f)
+    return []
+
+def save_analysis_history(history_list):
+    with open(ANALYSIS_HISTORY_FILE, "w") as f:
+        json.dump(history_list, f, indent=2)
+
+def get_statistics():
+    feedback_list = load_feedback()
+    history = load_analysis_history()
+    
+    total_analyses = len(history)
+    avg_rating = sum([int(f.get("rating", 5)) for f in feedback_list]) / len(feedback_list) if feedback_list else 0
+    safe_samples = len([h for h in history if h.get("level") == "safe"])
+    danger_samples = len([h for h in history if h.get("level") == "danger"])
+    
+    return {
+        "total_analyses": total_analyses,
+        "safe_samples": safe_samples,
+        "danger_samples": danger_samples,
+        "avg_rating": round(avg_rating, 1),
+        "total_users": len(feedback_list)
+    }
+
+@app.route("/")
+def home():
+    stats = get_statistics()
+    return render_template("safety_dashboard.html", stats=stats)
+
+@app.route("/detection-testing", methods=["GET", "POST"])
+def detection_testing():
     result = None
     warning = None
 
@@ -87,11 +137,51 @@ def index():
                 "safe_dose": round(safe_dose, 3),
                 "level": level
             }
+            
+            # Save to history
+            analysis_entry = {
+                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "sensor_value": sensor_value,
+                "weight": weight,
+                "detected_level": round(steroid_mg_l, 3),
+                "safe_dose": round(safe_dose, 3),
+                "level": level
+            }
+            history = load_analysis_history()
+            history.append(analysis_entry)
+            save_analysis_history(history)
 
         except ValueError:
             warning = "❌ Invalid input. Please enter valid numbers."
 
-    return render_template("index.html", result=result, warning=warning)
+    return render_template("detection_testing.html", result=result, warning=warning)
+
+@app.route("/community-reviews", methods=["GET", "POST"])
+def community_reviews():
+    if request.method == "POST":
+        try:
+            user_feedback = {
+                "name": request.form.get("name", "Anonymous"),
+                "email": request.form.get("email", ""),
+                "message": request.form.get("message", ""),
+                "rating": request.form.get("rating", "5"),
+                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            }
+            
+            feedback_list = load_feedback()
+            feedback_list.append(user_feedback)
+            save_feedback(feedback_list)
+            
+            success_message = "✅ Thank you for your feedback!"
+            feedback_list = load_feedback()
+            return render_template("community_reviews.html", success_message=success_message, feedback_list=feedback_list)
+        except Exception as e:
+            error_message = f"❌ Error saving feedback: {str(e)}"
+            feedback_list = load_feedback()
+            return render_template("community_reviews.html", error_message=error_message, feedback_list=feedback_list)
+    
+    feedback_list = load_feedback()
+    return render_template("community_reviews.html", feedback_list=feedback_list)
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

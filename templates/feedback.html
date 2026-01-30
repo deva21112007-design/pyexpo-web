@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback - Smart Steroid Safety Analyzer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<div class="main-container">
+    <header>
+        <div class="header-content">
+            <h1><i class="fas fa-shield-alt"></i> Steroid Detection & Safety System</h1>
+            <p>Ensuring safe milk and meat for human consumption</p>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <ul class="nav-links">
+            <li><a href="/"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="/calculate"><i class="fas fa-calculator"></i> Calculate</a></li>
+            <li><a href="/feedback" class="active"><i class="fas fa-comments"></i> Feedback</a></li>
+        </ul>
+    </nav>
+
+    <!-- Feedback Form Card -->
+    <div class="card feedback-card">
+        <h2><i class="fas fa-comments"></i> Send Us Your Feedback</h2>
+        <p class="feedback-subtitle">Your feedback helps us improve the system</p>
+
+        {% if success_message %}
+        <div class="alert alert-success">
+            {{ success_message }}
+        </div>
+        {% endif %}
+
+        {% if error_message %}
+        <div class="alert alert-error">
+            {{ error_message }}
+        </div>
+        {% endif %}
+
+        <form method="post" class="feedback-form">
+            <div class="form-group">
+                <label for="name"><i class="fas fa-user"></i> Name</label>
+                <input type="text" id="name" name="name" placeholder="Your name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email"><i class="fas fa-envelope"></i> Email</label>
+                <input type="email" id="email" name="email" placeholder="your@email.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="rating"><i class="fas fa-star"></i> Rate Your Experience</label>
+                <select id="rating" name="rating" required>
+                    <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+                    <option value="4">⭐⭐⭐⭐ Good</option>
+                    <option value="3">⭐⭐⭐ Average</option>
+                    <option value="2">⭐⭐ Poor</option>
+                    <option value="1">⭐ Very Poor</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="message"><i class="fas fa-pen"></i> Your Feedback</label>
+                <textarea id="message" name="message" rows="6" placeholder="Tell us what you think..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn-primary">
+                <i class="fas fa-paper-plane"></i> Submit Feedback
+            </button>
+        </form>
+    </div>
+
+    <!-- Benefits Section -->
+    <section class="benefits-section">
+        <h2>Why Your Feedback Matters</h2>
+        <div class="benefits-grid">
+            <div class="benefit-item">
+                <i class="fas fa-lightbulb"></i>
+                <h4>Improvements</h4>
+                <p>Help us enhance the system features</p>
+            </div>
+            <div class="benefit-item">
+                <i class="fas fa-users"></i>
+                <h4>Community</h4>
+                <p>Be part of our growing community</p>
+            </div>
+            <div class="benefit-item">
+                <i class="fas fa-handshake"></i>
+                <h4>Support</h4>
+                <p>Get dedicated support from our team</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p><i class="fas fa-heartbeat"></i> Protecting Public Health with Smart Technology</p>
+    </footer>
+</div>
+
+</body>
+</html>
