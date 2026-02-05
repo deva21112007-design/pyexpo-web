@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detection Testing - Steroid Detection System</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=lighttheme">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -29,6 +29,7 @@
                             aria-hidden="true"></i> Detection Testing</a></li>
                 <li><a href="/community-reviews" aria-label="Go to Community Reviews page"><i class="fas fa-star"
                             aria-hidden="true"></i> Community Reviews</a></li>
+                <li><a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
             </ul>
         </nav>
 
@@ -36,6 +37,15 @@
         <div class="card input-card" role="region" aria-labelledby="test-heading">
             <form method="post" aria-labelledby="test-heading">
                 <h2 id="test-heading"><i class="fas fa-flask" aria-hidden="true"></i> Sample Analysis Test</h2>
+
+                <div class="input-group">
+                    <label for="sample_type"><i class="fas fa-vial" aria-hidden="true"></i> Sample Type</label>
+                    <select id="sample_type" name="sample_type" required>
+                        <option value="milk">Milk</option>
+                        <option value="meat">Meat</option>
+                        <option value="water">Water</option>
+                    </select>
+                </div>
 
                 <div class="input-group">
                     <label for="sensor"><i class="fas fa-microscope" aria-hidden="true"></i> Sensor Reading
@@ -92,6 +102,18 @@
                     alt="Steroid Level Analysis - Trend Graph showing detected level vs safe limit">
             </div>
             {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Review Prompt Modal (Hidden by default, shown via JS if result exists) -->
+        {% if result %}
+        <div class="review-prompt" style="text-align: center; margin-top: 30px;">
+            <h3><i class="fas fa-clipboard-check"></i> Analysis Official Complete</h3>
+            <p>Would you like to submit this analysis to the community review board?</p>
+            <a href="/community-reviews?rating=5&message=Analysis Result: {{ result.detected }}mg/L ({{ result.level }}) - Sample Limit: {{ result.safe_dose }}mg"
+                class="btn-primary btn-large" style="max-width: 400px; margin: 20px auto;">
+                <i class="fas fa-share-square"></i> Submit to Review
+            </a>
         </div>
         {% endif %}
 

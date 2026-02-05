@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Community Reviews - Steroid Detection System</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=lighttheme">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -29,6 +29,7 @@
                             aria-hidden="true"></i> Detection Testing</a></li>
                 <li><a href="/community-reviews" class="active" aria-current="page"><i class="fas fa-star"
                             aria-hidden="true"></i> Community Reviews</a></li>
+                <li><a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
             </ul>
         </nav>
 
@@ -125,6 +126,24 @@
         </footer>
     </div>
 
+    <script>
+        // Pre-fill form from URL parameters (e.g. from detection testing result)
+        window.addEventListener('DOMContentLoaded', (event) => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const rating = urlParams.get('rating');
+            const message = urlParams.get('message');
+
+            if (rating) {
+                const ratingSelect = document.getElementById('rating');
+                if (ratingSelect) ratingSelect.value = rating;
+            }
+
+            if (message) {
+                const messageTextarea = document.getElementById('message');
+                if (messageTextarea) messageTextarea.value = message;
+            }
+        });
+    </script>
 </body>
 
 </html>

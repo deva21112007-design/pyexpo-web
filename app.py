@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash
+import functools
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -7,14 +8,34 @@ import json
 from datetime import datetime
 
 app = Flask(__name__)
+app.secret_key = "super_secret_key_for_demo_only"  # In production, use environment variable
 
 # SAFE LIMITS
 SAFE_LIMIT_MG_L = 0.5
 RECOMMENDED_MG_KG = 0.02
 
-# Store feedback
+# Store data
 FEEDBACK_FILE = "feedback_data.json"
 ANALYSIS_HISTORY_FILE = "analysis_history.json"
+USERS_FILE = "users.json"
+
+def load_users():
+    if os.path.exists(USERS_FILE):
+        with open(USERS_FILE, "r") as f:
+            return json.load(f)
+    return {}
+
+def save_users(users):
+    with open(USERS_FILE, "w") as f:
+        json.dump(users, f, indent=2)
+
+def login_required(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        if "user" not in session:
+            return redirect(url_for("login"))
+        return func(*args, **kwargs)
+    return wrapper
 
 def load_feedback():
     if os.path.exists(FEEDBACK_FILE):
@@ -54,11 +75,13 @@ def get_statistics():
     }
 
 @app.route("/")
+@login_required
 def home():
     stats = get_statistics()
     return render_template("safety_dashboard.html", stats=stats)
 
 @app.route("/detection-testing", methods=["GET", "POST"])
+@login_required
 def detection_testing():
     result = None
     warning = None
@@ -67,9 +90,22 @@ def detection_testing():
         try:
             sensor_value = float(request.form["sensor"])
             weight = float(request.form["weight"])
+            sample_type = request.form.get("sample_type", "milk")
 
+            import random
+            # Multipliers for different sample types (simulated physics)
+            multipliers = {
+                "milk": 0.03,
+                "meat": 0.045,
+                "water": 0.01
+            }
+            base_multiplier = multipliers.get(sample_type, 0.03)
+            
+            # Add random noise (±5%) to simulate realistic sensor variance
+            noise = random.uniform(0.95, 1.05)
+            
             # Calibration (demo)
-            steroid_mg_l = sensor_value * 0.03
+            steroid_mg_l = sensor_value * base_multiplier * noise
 
             # Safe dose calculation
             safe_dose = weight * RECOMMENDED_MG_KG
@@ -157,6 +193,7 @@ def detection_testing():
     return render_template("detection_testing.html", result=result, warning=warning)
 
 @app.route("/community-reviews", methods=["GET", "POST"])
+@login_required
 def community_reviews():
     if request.method == "POST":
         try:
@@ -182,6 +219,40 @@ def community_reviews():
     
     feedback_list = load_feedback()
     return render_template("community_reviews.html", feedback_list=feedback_list)
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        users = load_users()
+        
+        if username in users and users[username] == password:
+            session["user"] = username
+            return redirect(url_for("home"))
+        else:
+            return render_template("login.html", error="Invalid username or password")
+            
+    return render_template("login.html")
+
+@app.route("/register", methods=["POST"])
+def register():
+    username = request.form["username"]
+    password = request.form["password"]
+    users = load_users()
+    
+    if username in users:
+        return render_template("login.html", error="Username already exists")
+    
+    users[username] = password
+    save_users(users)
+    session["user"] = username
+    return redirect(url_for("home"))
+
+@app.route("/logout")
+def logout():
+    session.pop("user", None)
+    return redirect(url_for("login"))
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
