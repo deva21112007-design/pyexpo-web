@@ -182,5 +182,27 @@
     "detected_level": 0.678,
     "safe_dose": 0.8,
     "level": "danger"
+  },
+  {
+    "timestamp": "2026-02-05 22:20:27",
+    "sensor_value": 4.56,
+    "weight": 0.3,
+    "detected_level": 0.143,
+    "safe_dose": 0.006,
+    "level": "safe"
+  },
+  {
+    "timestamp": "2026-02-05 23:24:41",
+    "sample_type": "milk",
+    "detected_level": 47.8,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1770314081.png"
+  },
+  {
+    "timestamp": "2026-02-05 23:31:10",
+    "sample_type": "milk",
+    "detected_level": 47.8,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1770314470.png"
   }
 ]

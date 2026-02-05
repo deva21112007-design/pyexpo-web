@@ -33,6 +33,48 @@
             </ul>
         </nav>
 
+        <!-- Welcome Banner for Logged In Users -->
+        {% if session.user %}
+        <div class="welcome-banner"
+            style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); padding: 15px 25px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #81c784; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); animation: fadeInUp 0.5s ease-out;">
+            <div
+                style="background: white; padding: 10px; border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 45px; height: 45px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                <i class="fas fa-user-circle" style="font-size: 1.5rem; color: #2e7d32; margin-bottom:0px"></i>
+            </div>
+            <div>
+                <h3 style="margin: 0; color: #1b5e20; font-size: 1.2rem;">Welcome back, {{ session.user }}!</h3>
+                <p style="margin: 3px 0 0; color: #388e3c; font-size: 0.9rem;">Ready to run some safety tests today?</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Last Result Summary (if exists) -->
+        {% if last_test %}
+        <div class="last-result-box"
+            style="background: white; padding: 15px 20px; border-radius: 12px; margin-bottom: 30px; border-left: 5px solid {{ '#2e7d32' if last_test.level == 'safe' else '#c62828' }}; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div
+                    style="background: {{ 'rgba(46, 125, 50, 0.1)' if last_test.level == 'safe' else 'rgba(198, 40, 40, 0.1)' }}; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-history"
+                        style="color: {{ '#2e7d32' if last_test.level == 'safe' else '#c62828' }};"></i>
+                </div>
+                <div>
+                    <h4 style="margin: 0; font-size: 0.95rem; color: var(--tm);">Last Test Result</h4>
+                    <p style="margin: 2px 0 0; font-weight: 700; color: var(--t); font-size: 1.1rem;">
+                        {{ last_test.detected_level }} mg/L
+                        <span
+                            style="font-size: 0.8rem; font-weight: 600; padding: 2px 8px; border-radius: 10px; background: {{ '#e8f5e9' if last_test.level == 'safe' else '#ffebee' }}; color: {{ '#2e7d32' if last_test.level == 'safe' else '#c62828' }}; margin-left: 8px;">
+                            {{ last_test.level|upper }}
+                        </span>
+                    </p>
+                </div>
+            </div>
+            <div style="text-align: right;">
+                <p style="margin: 0; font-size: 0.85rem; color: var(--tm);">{{ last_test.timestamp }}</p>
+            </div>
+        </div>
+        {% endif %}
+
         <!-- Input Card -->
         <div class="card input-card" role="region" aria-labelledby="test-heading">
             <form method="post" aria-labelledby="test-heading">
@@ -98,8 +140,8 @@
 
             {% if result.detected %}
             <div class="graph-container" role="region" aria-label="Steroid level trend graph">
-                <img src="{{ url_for('static', filename='steroid_graph.png') }}"
-                    alt="Steroid Level Analysis - Trend Graph showing detected level vs safe limit">
+                <img src="{{ plot_url if plot_url else url_for('static', filename='steroid_graph.png') }}"
+                    alt="Steroid Level Analysis - Dynamic Graph showing detected level vs safe limit">
             </div>
             {% endif %}
         </div>
@@ -109,11 +151,18 @@
         {% if result %}
         <div class="review-prompt" style="text-align: center; margin-top: 30px;">
             <h3><i class="fas fa-clipboard-check"></i> Analysis Official Complete</h3>
-            <p>Would you like to submit this analysis to the community review board?</p>
-            <a href="/community-reviews?rating=5&message=Analysis Result: {{ result.detected }}mg/L ({{ result.level }}) - Sample Limit: {{ result.safe_dose }}mg"
-                class="btn-primary btn-large" style="max-width: 400px; margin: 20px auto;">
-                <i class="fas fa-share-square"></i> Submit to Review
-            </a>
+            <p>Would you like to download your report or submit to the community?</p>
+
+            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
+                <a href="/download_report" class="btn-primary btn-large" style="max-width: 300px; background: #455a64;">
+                    <i class="fas fa-file-pdf"></i> Download Official Report
+                </a>
+
+                <a href="/community-reviews?rating=5&message=Analysis Result: {{ result.detected }}mg/L ({{ result.level }}) - Sample Limit: {{ result.safe_dose }}mg"
+                    class="btn-primary btn-large" style="max-width: 300px;">
+                    <i class="fas fa-share-square"></i> Submit to Review
+                </a>
+            </div>
         </div>
         {% endif %}
 

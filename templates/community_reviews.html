@@ -87,7 +87,7 @@
 
         <!-- Community Reviews Display -->
         {% if feedback_list %}
-        <section class="community-reviews-section" aria-labelledby="reviews-heading">
+        <section id="reviews-display" class="community-reviews-section" aria-labelledby="reviews-heading">
             <h2 id="reviews-heading"><i class="fas fa-comments" aria-hidden="true"></i> Community Feedback ({{
                 feedback_list|length }} Reviews)</h2>
 
@@ -99,6 +99,13 @@
                             <h4 class="review-name">{{ review.name }}</h4>
                             <p class="review-timestamp">
                                 <i class="fas fa-calendar" aria-hidden="true"></i> {{ review.timestamp }}
+                                {% if review.sentiment %}
+                                <span class="sentiment-badge sentiment-{{ review.sentiment|lower }}">
+                                    <i
+                                        class="fas {{ 'fa-smile' if review.sentiment == 'Positive' else ('fa-frown' if review.sentiment == 'Negative' else 'fa-meh') }}"></i>
+                                    {{ review.sentiment }}
+                                </span>
+                                {% endif %}
                             </p>
                         </div>
                         <div class="review-rating" role="status" aria-label="Rating: {{ review.rating }} out of 5">
