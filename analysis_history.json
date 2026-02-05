@@ -158,5 +158,29 @@
     "detected_level": 0.235,
     "safe_dose": 1.38,
     "level": "safe"
+  },
+  {
+    "timestamp": "2026-02-05 18:55:49",
+    "sensor_value": 1.25,
+    "weight": 3.0,
+    "detected_level": 0.037,
+    "safe_dose": 0.06,
+    "level": "safe"
+  },
+  {
+    "timestamp": "2026-02-05 19:50:55",
+    "sensor_value": 1.25,
+    "weight": 3.0,
+    "detected_level": 0.057,
+    "safe_dose": 0.06,
+    "level": "safe"
+  },
+  {
+    "timestamp": "2026-02-05 19:57:57",
+    "sensor_value": 23.0,
+    "weight": 40.0,
+    "detected_level": 0.678,
+    "safe_dose": 0.8,
+    "level": "danger"
   }
 ]

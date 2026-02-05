@@ -32,10 +32,18 @@ body {
   color: var(--t);
 }
 
+body.home-bg-body {
+  background: linear-gradient(rgba(240, 247, 244, 0.85), rgba(216, 232, 226, 0.9)), url('home_bg_pattern.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
 .main-container {
   max-width: 100%;
   margin: auto;
   padding: 20px 40px;
+  animation: pageEntry 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
 /* Top Section Wrapper - No longer needed, Statistics is full width */
@@ -107,11 +115,13 @@ header h1,
 header h1 {
   font-size: 2.5rem;
   margin-bottom: 8px;
+  animation: slideDown 0.5s ease-out;
 }
 
 .hero-content h2 {
   font-size: 2.2rem;
   margin-bottom: 15px;
+  animation: slideDown 0.6s ease-out 0.2s backwards;
 }
 
 /* Icons & Text */
@@ -341,9 +351,11 @@ textarea {
   transition: 0.3s;
 }
 
-input:focus {
+input:focus,
+select:focus,
+textarea:focus {
   border-color: var(--p);
-  box-shadow: 0 0 12px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 0 0 3px rgba(82, 183, 136, 0.3);
 }
 
 /* Form Spacing for Detection Page */
@@ -401,13 +413,55 @@ button {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  transition: 0.3s;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 button:hover {
   transform: translateY(-2px);
   box-shadow: 0 12px 30px rgba(102, 126, 234, 0.5);
   letter-spacing: 0.5px;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+/* Ripple effect via pseudo-element */
+button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%);
+  transform-origin: 50% 50%;
+}
+
+button:focus:not(:active)::after {
+  animation: ripple 1s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0);
+    opacity: 1;
+  }
+
+  20% {
+    transform: scale(25, 25);
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(40, 40);
+  }
 }
 
 /* Quick Action Buttons - Brighter and More Vibrant */
@@ -458,7 +512,7 @@ button:hover {
 
 .nav-links a {
   text-decoration: none;
-  color: #ffffff;
+  color: var(--t);
   padding: 12px 20px;
   border-radius: 8px;
   transition: 0.3s;
@@ -503,6 +557,50 @@ button:hover {
   }
 }
 
+/* Staggered Animations */
+.info-cards>*,
+.features-grid>*,
+.limits-info>*,
+.result-grid>*,
+.benefit-item,
+.review-card {
+  animation: fadeInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+}
+
+.info-cards>*:nth-child(1),
+.features-grid>*:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.info-cards>*:nth-child(2),
+.features-grid>*:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.info-cards>*:nth-child(3),
+.features-grid>*:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.info-cards>*:nth-child(4),
+.features-grid>*:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+.info-cards>*:nth-child(5) {
+  animation-delay: 0.5s;
+}
+
+.info-cards>*:nth-child(6) {
+  animation-delay: 0.6s;
+}
+
+/* Graph Reveal */
+.graph-container canvas {
+  animation: fadeIn 0.8s ease-out 0.4s backwards;
+}
+
+
 /* Specific Elements */
 .status-badge {
   display: inline-flex;
@@ -512,12 +610,22 @@ button:hover {
   border-radius: 25px;
   font-weight: 700;
   color: white;
-  animation: pulse 2s infinite;
+  animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .status-badge.safe {
   background: linear-gradient(135deg, #2e7d32, #66bb6a);
+}
+
+.status-badge.caution {
+  background: linear-gradient(135deg, #f57f17, #fbc02d);
+  color: #000;
+}
+
+.status-badge.danger {
+  background: linear-gradient(135deg, #c62828, #ef5350);
+  animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), pulse-subtle 2s infinite;
 }
 
 .status-badge.caution {
@@ -613,7 +721,7 @@ footer p {
 }
 
 /* Animations */
-@keyframes fadeIn {
+@keyframes pageEntry {
   from {
     opacity: 0;
     transform: translateY(20px);
@@ -628,7 +736,7 @@ footer p {
 @keyframes slideDown {
   from {
     opacity: 0;
-    transform: translateY(-30px);
+    transform: translateY(-20px);
   }
 
   to {
@@ -637,17 +745,55 @@ footer p {
   }
 }
 
-@keyframes pulse {
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-subtle {
 
   0%,
   100% {
-    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4);
   }
 
   50% {
-    transform: scale(1.05);
+    box-shadow: 0 0 0 4px rgba(220, 53, 69, 0);
   }
 }
+
+/* Base keyframes retained/refined */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Original pulse removed/replaced where used */
+
 
 /* Responsive */
 @media (max-width: 768px) {
@@ -676,4 +822,189 @@ footer p {
   .features-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* Process Section */
+.process-steps {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 30px;
+}
+
+.process-step {
+  flex: 1;
+  min-width: 180px;
+  background: white;
+  padding: 25px 20px;
+  border-radius: 12px;
+  text-align: center;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  position: relative;
+  transition: transform 0.3s ease;
+}
+
+.process-step:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.step-number {
+  background: var(--p);
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin: 0 auto 15px;
+}
+
+.process-step i {
+  font-size: 2rem;
+  margin-bottom: 15px;
+  color: var(--s);
+  display: block;
+}
+
+.process-step h4 {
+  color: var(--p);
+  margin-bottom: 10px;
+}
+
+.process-step p {
+  font-size: 0.9rem;
+}
+
+/* Health Risks Section */
+.risks-content {
+  background: #fff5f5;
+  border: 1px solid #ffcdd2;
+  border-radius: 12px;
+  padding: 30px;
+}
+
+.risk-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  list-style: none;
+}
+
+.risk-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #c62828;
+  font-weight: 500;
+}
+
+.risk-list li i {
+  color: #ef5350;
+}
+
+/* Safe Limit Table */
+.limit-table-container {
+  overflow-x: auto;
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.limit-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.limit-table th,
+.limit-table td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.limit-table th {
+  background-color: var(--bg);
+  color: var(--p);
+}
+
+.level-badge {
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.level-safe {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.level-caution {
+  background: #fffde7;
+  color: #f9a825;
+}
+
+.level-danger {
+  background: #ffebee;
+  color: #c62828;
+}
+
+/* Applications Grid */
+.apps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.app-card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  border: 1px solid #eee;
+  transition: 0.3s;
+}
+
+.app-card:hover {
+  transform: translateX(5px);
+  border-color: var(--s);
+}
+
+.app-card i {
+  font-size: 1.5rem;
+  color: var(--s);
+}
+
+/* Future Scope */
+.future-section {
+  background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+  border: 1px solid #e1bee7;
+}
+
+.future-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+  list-style: none;
+}
+
+.future-list li {
+  background: rgba(255, 255, 255, 0.6);
+  padding: 15px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.future-list li i {
+  color: #8e24aa;
 }
