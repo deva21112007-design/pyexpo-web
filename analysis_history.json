@@ -204,5 +204,26 @@
     "detected_level": 47.8,
     "level": "danger",
     "plot_url": "/static/plots/plot_1770314470.png"
+  },
+  {
+    "timestamp": "2026-02-06 08:21:14",
+    "sample_type": "milk",
+    "detected_level": 6.28,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1770346274.png"
+  },
+  {
+    "timestamp": "2026-02-06 08:45:37",
+    "sample_type": "milk",
+    "detected_level": 0.0,
+    "level": "safe",
+    "plot_url": "/static/plots/plot_1770347737.png"
+  },
+  {
+    "timestamp": "2026-02-06 08:46:15",
+    "sample_type": "milk",
+    "detected_level": 5.0,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1770347775.png"
   }
 ]

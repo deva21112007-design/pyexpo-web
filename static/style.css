@@ -3,8 +3,8 @@
   /* Deep Forest Green */
   --s: #2d6a4f;
   /* Forest Green */
-  --bg: #fdfcfb;
-  /* Soft Linen/Cream */
+  --bg: #f2ede4;
+  /* Warm Parchment/Linen Base */
   --t: #283618;
   /* Dark Moss Green (Text) */
   --tm: #606c38;
@@ -30,17 +30,33 @@
 }
 
 body {
-  background: var(--bg);
+  background:
+    radial-gradient(at 0% 0%, rgba(27, 67, 50, 0.12) 0px, transparent 50%),
+    radial-gradient(at 50% 0%, rgba(188, 108, 37, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(45, 106, 79, 0.12) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(188, 108, 37, 0.1) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(27, 67, 50, 0.15) 0px, transparent 50%),
+    var(--bg);
+  background-attachment: fixed;
   min-height: 100vh;
   color: var(--t);
   line-height: 1.6;
+  position: relative;
 }
 
-body.home-bg-body {
-  background: linear-gradient(135deg, #fdfcfb, #f5f0e1);
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
+/* Humanized subtle texture overlay */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("https://www.transparenttextures.com/patterns/linen.png");
+  opacity: 0.4;
+  /* Stronger texture for humanized feel */
+  pointer-events: none;
+  z-index: -1;
 }
 
 .main-container {
