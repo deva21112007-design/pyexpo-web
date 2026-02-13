@@ -225,5 +225,173 @@
     "detected_level": 5.0,
     "level": "danger",
     "plot_url": "/static/plots/plot_1770347775.png"
+  },
+  {
+    "timestamp": "2026-02-06 10:05:40",
+    "sample_type": "milk",
+    "detected_level": 0.62,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1770352540.png"
+  },
+  {
+    "timestamp": "2026-02-06 10:08:25",
+    "sample_type": "milk",
+    "detected_level": 0.6,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1770352705.png"
+  },
+  {
+    "timestamp": "2026-02-06 10:12:47",
+    "sample_type": "milk",
+    "detected_level": 0.6,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1770352967.png"
+  },
+  {
+    "timestamp": "2026-02-06 10:13:43",
+    "sample_type": "milk",
+    "detected_level": 0.6,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1770353023.png"
+  },
+  {
+    "timestamp": "2026-02-06 10:14:32",
+    "sample_type": "milk",
+    "detected_level": 0.63,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1770353072.png"
+  },
+  {
+    "timestamp": "2026-02-06 10:15:20",
+    "sample_type": "milk",
+    "detected_level": 0.67,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1770353119.png"
+  },
+  {
+    "timestamp": "2026-02-06 10:22:27",
+    "sample_type": "milk",
+    "detected_level": 0.67,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1770353547.png"
+  },
+  {
+    "timestamp": "2026-02-06 10:23:02",
+    "sample_type": "milk",
+    "detected_level": 0.67,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1770353581.png"
+  },
+  {
+    "timestamp": "2026-02-06 10:35:40",
+    "sample_type": "milk",
+    "detected_level": 0.5,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1770354339.png"
+  },
+  {
+    "timestamp": "2026-02-06 10:40:13",
+    "sample_type": "milk",
+    "detected_level": 0.67,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1770354612.png"
+  },
+  {
+    "timestamp": "2026-02-06 10:45:04",
+    "sample_type": "milk",
+    "detected_level": 0.5,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1770354904.png"
+  },
+  {
+    "timestamp": "2026-02-06 10:48:01",
+    "sample_type": "milk",
+    "detected_level": 0.2,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1770355081.png"
+  },
+  {
+    "timestamp": "2026-02-06 10:48:21",
+    "sample_type": "meat",
+    "detected_level": 0.04,
+    "level": "safe",
+    "plot_url": "/static/plots/plot_1770355101.png"
+  },
+  {
+    "timestamp": "2026-02-06 10:50:59",
+    "sample_type": "meat",
+    "detected_level": 0.67,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1770355259.png"
+  },
+  {
+    "timestamp": "2026-02-06 10:51:23",
+    "sample_type": "milk",
+    "detected_level": 0.33,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1770355282.png"
+  },
+  {
+    "timestamp": "2026-02-06 10:59:53",
+    "sample_type": "milk",
+    "detected_level": 1.0,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1770355792.png"
+  },
+  {
+    "timestamp": "2026-02-06 11:04:26",
+    "sample_type": "milk",
+    "detected_level": 0.67,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1770356066.png"
+  },
+  {
+    "timestamp": "2026-02-06 13:10:58",
+    "sample_type": "milk",
+    "detected_level": 62.5,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1770363657.png"
+  },
+  {
+    "timestamp": "2026-02-06 13:34:47",
+    "sample_type": "milk",
+    "detected_level": 0.92,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1770365086.png"
+  },
+  {
+    "timestamp": "2026-02-06 14:18:10",
+    "sample_type": "milk",
+    "detected_level": 0.5,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1770367689.png"
+  },
+  {
+    "timestamp": "2026-02-06 14:30:08",
+    "sample_type": "milk",
+    "detected_level": 0.0,
+    "level": "safe",
+    "plot_url": "/static/plots/plot_1770368408.png"
+  },
+  {
+    "timestamp": "2026-02-09 18:35:09",
+    "sample_type": "water",
+    "detected_level": 0.01,
+    "level": "caution",
+    "plot_url": "/static/plots/plot_1770642308.png"
+  },
+  {
+    "timestamp": "2026-02-09 18:42:39",
+    "sample_type": "milk",
+    "detected_level": 1.25,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1770642759.png"
+  },
+  {
+    "timestamp": "2026-02-13 18:21:44",
+    "sample_type": "milk",
+    "detected_level": 0.42,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1770987104.png"
   }
 ]

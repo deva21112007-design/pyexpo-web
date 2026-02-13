@@ -1,5 +1,61 @@
 [
   {
+    "name": "mouriya",
+    "email": "mouriyavenkat.s@gmail.com",
+    "message": "very nice",
+    "rating": "5",
+    "timestamp": "2026-02-09 18:38:36",
+    "sentiment": "Positive"
+  },
+  {
+    "name": "dev",
+    "email": "guruar0821@gmail.com",
+    "message": "Analysis Result: 0.5mg/L (danger) - Sample Limit: 0.05mg\r\nthank u for steroid free milk",
+    "rating": "5",
+    "timestamp": "2026-02-06 14:19:00",
+    "sentiment": "Positive"
+  },
+  {
+    "name": "guru",
+    "email": "guruar0821@gmail.com",
+    "message": "Analysis Result: 0.92mg/L (danger) - Sample Limit: 0.05mg\r\nthanks for streoid free milk",
+    "rating": "5",
+    "timestamp": "2026-02-06 13:36:41",
+    "sentiment": "Positive"
+  },
+  {
+    "name": "pyexpo",
+    "email": "deva21112007@gmail.com",
+    "message": "thank u for this steroid free milk and meat",
+    "rating": "5",
+    "timestamp": "2026-02-06 13:29:09",
+    "sentiment": "Positive"
+  },
+  {
+    "name": "guru",
+    "email": "harizz1140@gmail.com",
+    "message": "wonderfull experience",
+    "rating": "5",
+    "timestamp": "2026-02-06 13:26:53",
+    "sentiment": "Neutral"
+  },
+  {
+    "name": "saranya",
+    "email": "saranya.u@kgkite.ac.in",
+    "message": "Analysis Result: 62.5mg/L (danger) - Sample Limit: 0.05mg",
+    "rating": "5",
+    "timestamp": "2026-02-06 13:12:11",
+    "sentiment": "Neutral"
+  },
+  {
+    "name": "Dev venkat",
+    "email": "deva21112007@gmail.com",
+    "message": "-",
+    "rating": "5",
+    "timestamp": "2026-02-06 11:37:20",
+    "sentiment": "Neutral"
+  },
+  {
     "name": "Charu",
     "email": "charuramya01@gmail.com",
     "message": "Analysis Result: 5.0mg/L (danger) - Sample Limit: 0.05mg",

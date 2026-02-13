@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+*$py.class
+feedback_data.json
+analysis_history.json
+static/plots/
+static/reports/
+debug_check.py

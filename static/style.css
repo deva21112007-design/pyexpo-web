@@ -1,25 +1,29 @@
 :root {
-  --p: #1b4332;
-  /* Deep Forest Green */
-  --s: #2d6a4f;
-  /* Forest Green */
-  --bg: #f2ede4;
-  /* Warm Parchment/Linen Base */
-  --t: #283618;
-  /* Dark Moss Green (Text) */
-  --tm: #606c38;
-  /* Muted Moss */
-  --td: #1b4332;
-  /* Deep Text */
-  --acc: #bc6c25;
-  /* Earthy Terracotta */
-  --g-bg: #ffffff;
-  --g-bd: 1px solid rgba(27, 67, 50, 0.08);
-  /* Softened border */
-  --card-shadow: 0 10px 30px rgba(27, 67, 50, 0.05);
-  /* Humanized, soft shadow */
-  --radius: 16px;
-  /* Softer radius for humanized feel */
+  /* Light Theme Palette */
+  --p: #00695c;
+  /* Deep Teal - Primary/Heads */
+  --s: #004d40;
+  /* Darker Teal - Secondary */
+  --bg: #f8f9fa;
+  /* Very Light Gray/White Base */
+  --t: #212529;
+  /* Dark Gray - Body Text */
+  --tm: #546e7a;
+  /* Muted Blue Gray - Meta Text */
+  --td: #00796b;
+  /* Strong Teal - Text */
+  --acc: #00bfa5;
+  /* Vibrant Cyan-Teal - Accents */
+  --err: #d32f2f;
+  /* Red - Error */
+
+  /* Glass Variables - Light Mode */
+  --g-bg: rgba(255, 255, 255, 0.85);
+  /* White Glass */
+  --g-bd: 1px solid rgba(0, 0, 0, 0.05);
+  /* Subtle dark border */
+  --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  --radius: 24px;
 }
 
 * {
@@ -30,13 +34,12 @@
 }
 
 body {
+  /* Light Clean Background */
   background:
-    radial-gradient(at 0% 0%, rgba(27, 67, 50, 0.12) 0px, transparent 50%),
-    radial-gradient(at 50% 0%, rgba(188, 108, 37, 0.15) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(45, 106, 79, 0.12) 0px, transparent 50%),
-    radial-gradient(at 0% 100%, rgba(188, 108, 37, 0.1) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(27, 67, 50, 0.15) 0px, transparent 50%),
-    var(--bg);
+    radial-gradient(circle at 10% 20%, rgba(0, 121, 107, 0.05) 0%, transparent 60%),
+    radial-gradient(circle at 90% 80%, rgba(0, 77, 64, 0.05) 0%, transparent 60%),
+    linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  /* Light Airy Gradient */
   background-attachment: fixed;
   min-height: 100vh;
   color: var(--t);
@@ -44,7 +47,7 @@ body {
   position: relative;
 }
 
-/* Humanized subtle texture overlay */
+/* Modern clean pattern overlay */
 body::before {
   content: "";
   position: fixed;
@@ -52,9 +55,9 @@ body::before {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url("https://www.transparenttextures.com/patterns/linen.png");
-  opacity: 0.4;
-  /* Stronger texture for humanized feel */
+  background-image: radial-gradient(#009688 0.5px, transparent 0.5px);
+  background-size: 20px 20px;
+  opacity: 0.03;
   pointer-events: none;
   z-index: -1;
 }
@@ -83,9 +86,13 @@ body::before {
 }
 
 .info-cards,
-.result-grid,
 .limits-info {
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.result-grid {
+  grid-template-columns: 1fr;
+  /* Force vertical stacking */
 }
 
 /* 2x2 Grid Layouts */
@@ -175,6 +182,7 @@ strong,
 }
 
 /* Common Cards/Containers */
+/* Glassmorphism Cards */
 header,
 .card,
 .navbar,
@@ -186,11 +194,14 @@ header,
 .recent-section,
 .quick-actions {
   background: var(--g-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: var(--g-bd);
   border-radius: var(--radius);
-  padding: 30px;
+  padding: 40px;
   margin-bottom: 30px;
   box-shadow: var(--card-shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 /* Quick Actions at Top - Horizontal Layout */
@@ -258,10 +269,10 @@ header,
 }
 
 .kb-item {
-  background: #f9f9f9;
+  background: rgba(255, 255, 255, 0.6);
   padding: 20px;
   border-radius: 10px;
-  border: 1px solid #eee;
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .kb-item h3 {
@@ -353,10 +364,12 @@ header,
 .review-card,
 .recent-item,
 .result-item {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.7);
+  /* High opacity white for items */
   border-radius: 10px;
   padding: 25px;
-  border: var(--g-bd);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  /* Stronger definition */
   transition: 0.3s;
   box-shadow: var(--card-shadow);
 }
@@ -457,7 +470,8 @@ textarea {
   width: 100%;
   padding: 12px;
   background: #ffffff;
-  border: 1px solid #d1d9d6;
+  /* White input */
+  border: 1px solid rgba(0, 77, 64, 0.2);
   border-radius: 8px;
   color: var(--t);
   outline: none;
@@ -467,8 +481,9 @@ textarea {
 input:focus,
 select:focus,
 textarea:focus {
-  border-color: var(--p);
-  box-shadow: 0 0 0 3px rgba(82, 183, 136, 0.3);
+  border-color: var(--acc);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(0, 191, 165, 0.1);
 }
 
 /* Form Spacing for Detection Page */
@@ -515,8 +530,8 @@ textarea:focus {
 
 button {
   width: 100%;
-  padding: 14px;
-  background: linear-gradient(to right, var(--p), #764ba2);
+  padding: 16px;
+  background: linear-gradient(135deg, var(--s), var(--p));
   border: none;
   border-radius: 10px;
   color: white;
@@ -585,7 +600,8 @@ button:focus:not(:active)::after {
   font-weight: 600;
   border-radius: 12px;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  background: var(--s);
+  background: linear-gradient(135deg, #00c853, #009688);
+  /* Vibrant Green Gradient */
   border: none;
 }
 
@@ -991,8 +1007,9 @@ footer p {
 
 /* Health Risks Section */
 .risks-content {
-  background: #fff5f5;
-  border: 1px solid #ffcdd2;
+  background: rgba(255, 82, 82, 0.05);
+  /* Subtle Red Tint for Dark Mode */
+  border: 1px solid rgba(255, 82, 82, 0.1);
   border-radius: 12px;
   padding: 30px;
 }
@@ -1019,10 +1036,11 @@ footer p {
 /* Safe Limit Table */
 .limit-table-container {
   overflow-x: auto;
-  background: white;
+  background: rgba(255, 255, 255, 0.03);
+  /* Transparent Dark */
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .limit-table {
@@ -1034,12 +1052,14 @@ footer p {
 .limit-table td {
   padding: 15px;
   text-align: left;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .limit-table th {
-  background-color: var(--bg);
-  color: var(--p);
+  background-color: rgba(255, 255, 255, 0.05);
+  /* Slightly lighter dark */
+  color: var(--s);
+  /* Secondary Teal */
 }
 
 .level-badge {
@@ -1072,13 +1092,13 @@ footer p {
 }
 
 .app-card {
-  background: white;
+  background: rgba(255, 255, 255, 0.03);
   padding: 20px;
   border-radius: 12px;
   display: flex;
   align-items: center;
   gap: 15px;
-  border: 1px solid #eee;
+  border: 1px solid rgba(255, 255, 255, 0.05);
   transition: 0.3s;
 }
 
@@ -1106,7 +1126,7 @@ footer p {
 }
 
 .future-list li {
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.05);
   padding: 15px;
   border-radius: 8px;
   display: flex;

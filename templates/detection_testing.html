@@ -75,6 +75,14 @@
         </div>
         {% endif %}
 
+        <!-- Warning/Error Alert (Outside Result Card) -->
+        {% if warning and not result %}
+        <div class="alert-box {{ 'danger' if 'Error' in warning or 'Invalid' in warning else 'caution' }}"
+            style="background: #ffebee; color: #c62828; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #c62828; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+            <i class="fas fa-exclamation-triangle"></i> <strong>System Notification:</strong> {{ warning }}
+        </div>
+        {% endif %}
+
         <!-- Input Card -->
         <div class="card input-card" role="region" aria-labelledby="test-heading">
             <form method="post" aria-labelledby="test-heading">
@@ -83,9 +91,10 @@
                 <div class="input-group">
                     <label for="sample_type"><i class="fas fa-vial" aria-hidden="true"></i> Sample Type</label>
                     <select id="sample_type" name="sample_type" required>
-                        <option value="milk">Milk</option>
-                        <option value="meat">Meat</option>
-                        <option value="water">Water</option>
+                        <option value="milk" {% if request.form.sample_type=='milk' %}selected{% endif %}>Milk</option>
+                        <option value="meat" {% if request.form.sample_type=='meat' %}selected{% endif %}>Meat</option>
+                        <option value="water" {% if request.form.sample_type=='water' %}selected{% endif %}>Water
+                        </option>
                     </select>
                 </div>
 
@@ -93,14 +102,14 @@
                     <label for="sensor"><i class="fas fa-microscope" aria-hidden="true"></i> Sensor Reading
                         (mg/L)</label>
                     <input type="number" id="sensor" step="0.01" name="sensor" placeholder="Enter sensor value" required
-                        aria-label="Sensor reading value in mg/L">
+                        aria-label="Sensor reading value in mg/L" value="{{ request.form.sensor }}">
                 </div>
 
                 <div class="input-group">
                     <label for="weight"><i class="fas fa-weight" aria-hidden="true"></i> Sample Weight / Quantity
                         (kg/L)</label>
                     <input type="number" id="weight" step="0.1" name="weight" placeholder="Enter weight or quantity"
-                        required aria-label="Sample weight or quantity">
+                        required aria-label="Sample weight or quantity" value="{{ request.form.weight }}">
                 </div>
 
                 <button type="submit" class="btn-primary" aria-label="Submit form to analyze steroid level">
@@ -118,15 +127,15 @@
 
             <div class="result-grid">
                 <div class="result-item">
+                    <span class="result-label">Safe Dosage Limit</span>
+                    <span class="result-value" tabindex="0" aria-label="Safe dosage: {{ result.safe_dose }} mg">{{
+                        result.safe_dose }} mg</span>
+                </div>
+                <div class="result-item">
                     <span class="result-label">Detected Steroid Level</span>
                     <span class="result-value" tabindex="0"
                         aria-label="Detected steroid level: {{ result.detected }} mg/L">{{ result.detected }}
                         mg/L</span>
-                </div>
-                <div class="result-item">
-                    <span class="result-label">Safe Dosage Limit</span>
-                    <span class="result-value" tabindex="0" aria-label="Safe dosage: {{ result.safe_dose }} mg">{{
-                        result.safe_dose }} mg</span>
                 </div>
             </div>
 
@@ -138,7 +147,7 @@
                 </div>
             </div>
 
-            {% if result.detected %}
+            {% if result.detected is not none %}
             <div class="graph-container" role="region" aria-label="Steroid level trend graph">
                 <img src="{{ plot_url if plot_url else url_for('static', filename='steroid_graph.png') }}"
                     alt="Steroid Level Analysis - Dynamic Graph showing detected level vs safe limit">
