@@ -150,72 +150,88 @@ def home():
     return render_template("safety_dashboard.html", stats=stats)
 
 # --- FEATURE 2: DYNAMIC GRAPH GENERATION ---
-def generate_graph(history_data, current_detected, safe_limit, sample_type):
+# --- FEATURE 2: DYNAMIC GRAPH GENERATION ---
+def generate_graph(history_data, current_detected, current_timestamp, safe_limit, sample_type):
     """Generates a trend line chart comparing detected levels vs safe limit over time."""
-    plt.figure(figsize=(10, 5))
+    # Light theme background
+    plt.figure(figsize=(10, 5), facecolor='#f8f9fa')
     
     # Prepare Data
-    detected_values = [h['detected_level'] for h in history_data]
+    detected_values = [h.get('detected_level', 0) for h in history_data]
+    timestamps = [h.get('timestamp', '')[11:16] for h in history_data] # Extract HH:MM
     
     # Add current test to plot data
     detected_values.append(current_detected)
+    timestamps.append(current_timestamp[11:16]) # Extract HH:MM
     
-    # X-axis points (Time Points 1, 2, 3...)
-    x = range(1, len(detected_values) + 1)
+    # X-axis points (Time Points)
+    x = range(len(detected_values)) # 0 to N-1
     
     # Plot Safe Limit Line
-    # User requested "safe limit to be in the same line" - implying a line plot with markers like the image
-    plt.plot(x, [safe_limit] * len(x), label='Safe Limit', color='#2e7d32', linewidth=2.5, marker='o', zorder=10)
+    # Dark Green for Safe Limit as requested
+    plt.plot(x, [safe_limit] * len(x), label='Safe Limit', color='#2e7d32', linewidth=2.5, marker='o', zorder=5)
     
-    # Plot Detected Levels
-    # Colors from sample: Dark Green for limit, Light Green for Safe Detected
+    # Determine Status Color of Current Test (for Line Color)
     if current_detected <= safe_limit:
-        plot_color = '#66bb6a' # Light Green
+        line_color = '#66bb6a' # Light Green for Safe
         status_text = "SAFE"
     else:
-        plot_color = '#ef5350' # Red
+        line_color = '#ef5350' # Red for Danger
         status_text = "DANGER"
     
+    # Plot Trend Line (Color based on CURRENT status to show trend direction)
     plt.plot(x, detected_values, label=f'Detected Level ({status_text})', 
-             color=plot_color, linewidth=2.5, marker='s')
+             color=line_color, linewidth=2.5, zorder=6)
+
+    # Plot Individual Points (Color based on THEIR status to show history correctly)
+    point_colors = []
+    for val in detected_values:
+        if val <= safe_limit:
+            point_colors.append('#66bb6a') # Light Green
+        else:
+            point_colors.append('#ef5350') # Red
+
+    plt.scatter(x, detected_values, color=point_colors, s=100, marker='s', zorder=7, edgecolors='white')
 
     # Styling
-    # Dark Theme Graph Styling
-    plt.title('Steroid Level Analysis - Trend', fontsize=12, fontweight='bold', color='white')
-    plt.ylabel('mg/L', fontsize=10, color='white')
-    plt.xlabel('Time Points', fontsize=10, color='white')
-    plt.xticks(x, color='white') # Show all integers
-    plt.yticks(color='white')
-    plt.grid(True, linestyle='--', alpha=0.2, color='white')
+    # Light Theme Graph Styling
+    plt.title('Steroid Level Analysis - Real-Time Trend', fontsize=12, fontweight='bold', color='#333333')
+    plt.ylabel('mg/L', fontsize=10, color='#333333')
+    plt.xlabel('Time (HH:MM)', fontsize=10, color='#333333')
     
-    # Legend with dark background transparency
-    legend = plt.legend(loc='upper right', facecolor='#1e1e1e', edgecolor='none')
-    plt.setp(legend.get_texts(), color='white') # Legend text color
+    # Ticks styling
+    plt.xticks(x, timestamps, color='#333333', rotation=45) 
+    plt.yticks(color='#333333')
+    
+    # Grid styling
+    plt.grid(True, linestyle='--', alpha=0.5, color='#e0e0e0')
+    
+    # Legend styling
+    legend = plt.legend(loc='upper right', facecolor='white', edgecolor='#cccccc')
+    plt.setp(legend.get_texts(), color='#333333') # Legend text color
 
     # Add borders/limits
-    # Image goes from 0 to 0.7 for a limit of 0.5. roughly 1.4x safe limit seems right.
     max_y = max(max(detected_values), safe_limit)
     if max_y == 0: max_y = 1
     plt.ylim(0, max_y * 1.4)
 
-    # Set axes colors to transparent/white
+    # Set axes colors
     ax = plt.gca()
-    ax.set_facecolor('none') # Transparent plot area
-    ax.spines['bottom'].set_color('white')
-    ax.spines['top'].set_color('white') 
-    ax.spines['right'].set_color('white')
-    ax.spines['left'].set_color('white')
+    ax.set_facecolor('#f8f9fa') # Light gray plot area
+    for spine in ax.spines.values():
+        spine.set_color('#333333') # Dark gray spines
 
     # Save
-    timestamp = int(time.time())
-    filename = f"plot_{timestamp}.png"
+    timestamp_file = int(time.time())
+    filename = f"plot_{timestamp_file}.png"
     filepath = os.path.join("static", "plots", filename)
     
     # Ensure directory exists
     os.makedirs(os.path.join("static", "plots"), exist_ok=True)
     
-    # Save with transparent background
-    plt.savefig(filepath, bbox_inches='tight', transparent=True)
+    # Save with transparent background (or keep light background if preferred)
+    # Keeping facecolor from figure for consistency
+    plt.savefig(filepath, bbox_inches='tight', facecolor='#f8f9fa')
     plt.close()
     return filename
 # ---------------------------------------------
@@ -254,25 +270,36 @@ def detection_testing():
                 "level": status_level
             }
             
-            # Prepare History Data for Trend Graph (Filter by Sample Type)
+            # Prepare History Data for Trend Graph (Filter by Sample Type & User)
             history = load_analysis_history()
-            # Filter history for the same sample type only
-            relevant_history = [h for h in history if h.get("sample_type", "milk") == sample_type]
+            current_user = session.get("user")
+            
+            # STRICT Filter history: Same sample type AND Same user (NO LEGACY/SHARED DATA)
+            relevant_history = [
+                h for h in history 
+                if h.get("sample_type", "milk") == sample_type and 
+                h.get("user") == current_user
+            ]
+            
             # Take last 9 records to make graph readable (total 10 points with current)
             recent_history = relevant_history[-9:]
 
+            # Generate Timestamp for current test
+            current_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
             # Use Feature 2: Generate Dynamic Graph
-            plot_filename = generate_graph(recent_history, detected_level, safe_limit, sample_type)
+            plot_filename = generate_graph(recent_history, detected_level, current_timestamp, safe_limit, sample_type)
             plot_url = url_for('static', filename=f'plots/{plot_filename}')
             
             # Save History
             history = load_analysis_history()
             analysis_entry = {
-                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "timestamp": current_timestamp,
                 "sample_type": sample_type,
                 "detected_level": detected_level,
                 "level": status_level,
-                "plot_url": plot_url
+                "plot_url": plot_url,
+                "user": current_user  # Save user with record
             }
             history.append(analysis_entry)
             save_analysis_history(history)
@@ -328,7 +355,15 @@ def detection_testing():
     # Get last test result if not just submitted
     if request.method == "GET":
         history = load_analysis_history()
-        last_test = history[-1] if history else None
+        current_user = session.get("user")
+        
+        # STRICT Filter history: Same logic as POST (NO LEGACY/SHARED DATA)
+        relevant_history = [
+            h for h in history 
+            if h.get("user") == current_user
+        ]
+        
+        last_test = relevant_history[-1] if relevant_history else None
         # If there's a last test, set its plot_url for display
         if last_test and "plot_url" in last_test:
             plot_url = last_test["plot_url"]
