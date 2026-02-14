@@ -522,5 +522,37 @@
     "level": "safe",
     "plot_url": "/static/plots/plot_1771044823.png",
     "user": "Guruar"
+  },
+  {
+    "timestamp": "2026-02-14 10:41:12",
+    "sample_type": "milk",
+    "detected_level": 0.12,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1771045872.png",
+    "user": "Guruar"
+  },
+  {
+    "timestamp": "2026-02-14 10:49:01",
+    "sample_type": "milk",
+    "detected_level": 0.12,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1771046341.png",
+    "user": "Guruar"
+  },
+  {
+    "timestamp": "2026-02-14 10:52:49",
+    "sample_type": "milk",
+    "detected_level": 0.17,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1771046569.png",
+    "user": "sudharsna"
+  },
+  {
+    "timestamp": "2026-02-14 10:53:28",
+    "sample_type": "milk",
+    "detected_level": 0.02,
+    "level": "safe",
+    "plot_url": "/static/plots/plot_1771046608.png",
+    "user": "sudharsna"
   }
 ]

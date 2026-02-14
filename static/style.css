@@ -26,6 +26,75 @@
   --radius: 24px;
 }
 
+/* Dark Theme Variables */
+body.dark-mode {
+  --bg: #121212;
+  --t: #e0e0e0;
+  --tm: #b0bec5;
+  --p: #80cbc4;
+  /* Lighter Teal for Dark Mode Primary */
+  --s: #4db6ac;
+  /* Lighter Teal for Dark Mode Secondary */
+  --g-bg: rgba(30, 30, 30, 0.95);
+  /* Darker, less transparent glass */
+  --g-bd: 1px solid rgba(255, 255, 255, 0.1);
+  --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+
+  /* Override Body Background for Dark Mode */
+  background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+}
+
+/* Dark Mode Specific Overrides */
+body.dark-mode .app-card,
+body.dark-mode .info-card,
+body.dark-mode .limit-card,
+body.dark-mode .benefit-item,
+body.dark-mode .review-card,
+body.dark-mode .recent-item,
+body.dark-mode .result-item,
+body.dark-mode .process-step,
+body.dark-mode .kb-item,
+/* Added kb-item for better contrast */
+body.dark-mode .future-list li,
+/* Added future list for better contrast */
+body.dark-mode .limit-table th {
+  /* Added table header for better contrast */
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--t);
+}
+
+body.dark-mode .kb-item h3,
+body.dark-mode .future-list li i {
+  color: var(--p);
+}
+
+body.dark-mode .limit-table-container {
+  background: rgba(0, 0, 0, 0.2);
+  /* Darker background for table container */
+}
+
+body.dark-mode input,
+body.dark-mode select,
+body.dark-mode textarea {
+  background: #1e1e1e;
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+body.dark-mode header h1,
+body.dark-mode .result-card h2,
+body.dark-mode .hero-content h2,
+body.dark-mode .quick-actions h2,
+body.dark-mode .card h2 {
+  color: var(--p);
+}
+
+body.dark-mode i {
+  color: var(--s);
+}
+
+
 * {
   margin: 0;
   padding: 0;

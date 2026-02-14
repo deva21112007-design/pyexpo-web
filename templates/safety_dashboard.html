@@ -38,8 +38,46 @@
                 <!-- Guest: Show Login Only -->
                 <li><a href="/login"><i class="fas fa-sign-in-alt"></i> Login</a></li>
                 {% endif %}
+                
+                <!-- Theme Toggle Button -->
+                <li>
+                    <button id="theme-toggle" class="theme-btn" aria-label="Toggle Dark Mode" style="background: transparent; border: 1px solid var(--p); color: var(--p); padding: 8px 15px; width: auto; display: flex; align-items: center; justify-content: center; border-radius: 20px; cursor: pointer; transition: all 0.3s ease;">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </li>
             </ul>
         </nav>
+
+        <script>
+            // Theme Toggle Logic
+            document.addEventListener('DOMContentLoaded', () => {
+                const toggleBtn = document.getElementById('theme-toggle');
+                const icon = toggleBtn.querySelector('i');
+                const body = document.body;
+                
+                // Check saved preference
+                const currentTheme = localStorage.getItem('theme');
+                if (currentTheme === 'dark') {
+                    body.classList.add('dark-mode');
+                    icon.classList.remove('fa-moon');
+                    icon.classList.add('fa-sun');
+                }
+
+                toggleBtn.addEventListener('click', () => {
+                    body.classList.toggle('dark-mode');
+                    
+                    if (body.classList.contains('dark-mode')) {
+                        localStorage.setItem('theme', 'dark');
+                        icon.classList.remove('fa-moon');
+                        icon.classList.add('fa-sun');
+                    } else {
+                        localStorage.setItem('theme', 'light');
+                        icon.classList.remove('fa-sun');
+                        icon.classList.add('fa-moon');
+                    }
+                });
+            });
+        </script>
 
         {% if session.user %}
         <!-- Quick Actions - Only for Logged In Users -->
