@@ -52,6 +52,13 @@
 </head>
 
 <body>
+    <!-- Theme Toggle Button (Aboslute Positioned for Login Page) -->
+    <div style="position: absolute; top: 20px; right: 20px; z-index: 1000;">
+        <button id="theme-toggle" class="theme-btn" aria-label="Toggle Dark Mode"
+            style="background: transparent; border: 1px solid var(--p); color: var(--p); padding: 8px 15px; width: auto; display: flex; align-items: center; justify-content: center; border-radius: 20px; cursor: pointer; transition: all 0.3s ease;">
+            <i class="fas fa-moon"></i>
+        </button>
+    </div>
 
     <div class="main-container">
 
@@ -78,8 +85,9 @@
                         <input type="password" id="password" name="password" required>
                     </div>
                     <button type="submit" class="btn-primary">Login</button>
+                    <p class="switch-form" style="margin-top: 15px;">Don't have an account? <a onclick="toggleForm()"
+                            style="cursor: pointer;">Register here</a></p>
                 </form>
-                <p class="switch-form">Don't have an account? <a onclick="toggleForm()">Register here</a></p>
             </div>
 
             <!-- Register Form (Hidden by default) -->
@@ -95,8 +103,9 @@
                         <input type="password" id="new-password" name="password" required>
                     </div>
                     <button type="submit" class="btn-primary">Register</button>
+                    <p class="switch-form" style="margin-top: 15px;">Already have an account? <a onclick="toggleForm()"
+                            style="cursor: pointer;">Login here</a></p>
                 </form>
-                <p class="switch-form">Already have an account? <a onclick="toggleForm()">Login here</a></p>
             </div>
         </div>
     </div>
@@ -113,6 +122,35 @@
                 registerForm.style.display = 'block';
             }
         }
+
+        // Theme Toggle Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggleBtn = document.getElementById('theme-toggle');
+            const icon = toggleBtn.querySelector('i');
+            const body = document.body;
+
+            // Check saved preference
+            const currentTheme = localStorage.getItem('theme');
+            if (currentTheme === 'dark') {
+                body.classList.add('dark-mode');
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            }
+
+            toggleBtn.addEventListener('click', () => {
+                body.classList.toggle('dark-mode');
+
+                if (body.classList.contains('dark-mode')) {
+                    localStorage.setItem('theme', 'dark');
+                    icon.classList.remove('fa-moon');
+                    icon.classList.add('fa-sun');
+                } else {
+                    localStorage.setItem('theme', 'light');
+                    icon.classList.remove('fa-sun');
+                    icon.classList.add('fa-moon');
+                }
+            });
+        });
     </script>
 </body>
 
