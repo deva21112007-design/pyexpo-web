@@ -554,5 +554,21 @@
     "level": "safe",
     "plot_url": "/static/plots/plot_1771046608.png",
     "user": "sudharsna"
+  },
+  {
+    "timestamp": "2026-02-14 11:37:16",
+    "sample_type": "milk",
+    "detected_level": 0.01,
+    "level": "safe",
+    "plot_url": "/static/plots/plot_1771049236.png",
+    "user": "sudharsna"
+  },
+  {
+    "timestamp": "2026-02-14 11:48:23",
+    "sample_type": "milk",
+    "detected_level": 0.01,
+    "level": "safe",
+    "plot_url": "/static/plots/plot_1771049903.png",
+    "user": "sudharsna"
   }
 ]
