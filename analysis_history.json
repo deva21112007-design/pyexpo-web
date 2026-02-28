@@ -570,5 +570,103 @@
     "level": "safe",
     "plot_url": "/static/plots/plot_1771049903.png",
     "user": "sudharsna"
+  },
+  {
+    "timestamp": "2026-02-14 13:07:21",
+    "sample_type": "milk",
+    "detected_level": 0.07,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1771054641.png",
+    "user": "dev1"
+  },
+  {
+    "timestamp": "2026-02-14 13:11:08",
+    "sample_type": "milk",
+    "detected_level": 0.04,
+    "level": "safe",
+    "plot_url": "/static/plots/plot_1771054868.png",
+    "user": "dev1"
+  },
+  {
+    "timestamp": "2026-02-14 13:17:55",
+    "sample_type": "milk",
+    "detected_level": 0.07,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1771055275.png",
+    "user": "dev1"
+  },
+  {
+    "timestamp": "2026-02-14 13:35:40",
+    "sample_type": "milk",
+    "detected_level": 0.01,
+    "level": "safe",
+    "plot_url": "/static/plots/plot_1771056340.png",
+    "user": "anish"
+  },
+  {
+    "timestamp": "2026-02-14 13:36:20",
+    "sample_type": "milk",
+    "detected_level": 0.09,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1771056381.png",
+    "user": "anish"
+  },
+  {
+    "timestamp": "2026-02-14 14:08:27",
+    "sample_type": "milk",
+    "detected_level": 0.33,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1771058307.png",
+    "user": "anish"
+  },
+  {
+    "timestamp": "2026-02-14 14:36:04",
+    "sample_type": "milk",
+    "detected_level": 0.05,
+    "level": "caution",
+    "plot_url": "/static/plots/plot_1771059964.png",
+    "user": "anish"
+  },
+  {
+    "timestamp": "2026-02-18 19:39:40",
+    "sample_type": "milk",
+    "detected_level": 0.1,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1771423780.png",
+    "user": "dev1"
+  },
+  {
+    "timestamp": "2026-02-18 20:06:18",
+    "sample_type": "milk",
+    "detected_level": 0.08,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1771425378.png",
+    "user": "dev1"
+  },
+  {
+    "timestamp": "2026-02-18 21:28:54",
+    "sample_type": "milk",
+    "detected_level": 0.12,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1771430334.png",
+    "user": "dev1"
+  },
+  {
+    "timestamp": "2026-02-23 19:40:13",
+    "sample_type": "milk",
+    "detected_level": 0.1,
+    "level": "danger",
+    "plot_url": "/static/plots/plot_1771855813.png",
+    "user": "dev1"
+  },
+  {
+    "timestamp": "2026-02-23 20:01:21",
+    "sample_type": "milk",
+    "detected_level": 0.11,
+    "level": "danger",
+    "ph_value": 13.5,
+    "ph_status": "alkaline",
+    "plot_url": "/static/plots/plot_1771857081.png",
+    "user": "dev1"
   }
 ]

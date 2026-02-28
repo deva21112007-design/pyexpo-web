@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hardware Simulation - Steroid Detection System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=lighttheme">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .simulation-container {
+            width: 100%;
+            height: 80vh;
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main-container">
+        <header role="banner">
+            <div class="header-content">
+                <h1><i class="fas fa-microchip" aria-hidden="true"></i> Hardware Simulation</h1>
+                <p>Virtual Prototype of Steroid Detection Device</p>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="navbar" role="navigation" aria-label="Main navigation">
+            <ul class="nav-links">
+                <li><a href="/" aria-label="Go to Safety Dashboard"><i class="fas fa-chart-line" aria-hidden="true"></i>
+                        Safety Dashboard</a></li>
+                {% if session.user %}
+                <li><a href="/detection-testing" aria-label="Go to Detection Testing page"><i class="fas fa-flask"
+                            aria-hidden="true"></i> Detection Testing</a></li>
+                <li><a href="/community-reviews" aria-label="Go to Community Reviews page"><i class="fas fa-star"
+                            aria-hidden="true"></i> Community Reviews</a></li>
+                {% endif %}
+                <li><a href="/simulation" class="active" aria-current="page"><i class="fas fa-microchip"
+                            aria-hidden="true"></i> Simulation</a></li>
+
+                {% if session.user %}
+                <li><a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                {% else %}
+                <li><a href="/login"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+                {% endif %}
+
+                <!-- Theme Toggle Button -->
+                <li>
+                    <button id="theme-toggle" class="theme-btn" aria-label="Toggle Dark Mode"
+                        style="background: transparent; border: 1px solid var(--p); color: var(--p); padding: 8px 15px; width: auto; display: flex; align-items: center; justify-content: center; border-radius: 20px; cursor: pointer; transition: all 0.3s ease;">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </li>
+            </ul>
+        </nav>
+
+        <script>
+            // Theme Toggle Logic
+            document.addEventListener('DOMContentLoaded', () => {
+                const toggleBtn = document.getElementById('theme-toggle');
+                const icon = toggleBtn.querySelector('i');
+                const body = document.body;
+
+                // Check saved preference
+                const currentTheme = localStorage.getItem('theme');
+                if (currentTheme === 'dark') {
+                    body.classList.add('dark-mode');
+                    icon.classList.remove('fa-moon');
+                    icon.classList.add('fa-sun');
+                }
+
+                toggleBtn.addEventListener('click', () => {
+                    body.classList.toggle('dark-mode');
+
+                    if (body.classList.contains('dark-mode')) {
+                        localStorage.setItem('theme', 'dark');
+                        icon.classList.remove('fa-moon');
+                        icon.classList.add('fa-sun');
+                    } else {
+                        localStorage.setItem('theme', 'light');
+                        icon.classList.remove('fa-sun');
+                        icon.classList.add('fa-moon');
+                    }
+                });
+            });
+        </script>
+
+        <!-- Simulation Section -->
+        <section class="card" aria-label="Wokwi Simulation">
+            <iframe src="https://wokwi.com/projects/454497571799472129" class="simulation-container"
+                title="Wokwi Simulation"></iframe>
+            <div style="margin-top: 15px; text-align: center;">
+                <p><i class="fas fa-info-circle"></i> This is a live simulation of the hardware components. You can
+                    interact with the buttons and sensors directly in the browser.</p>
+                <a href="https://wokwi.com/projects/454497571799472129" target="_blank" class="btn-primary"
+                    style="display: inline-block; margin-top: 10px;">
+                    <i class="fas fa-external-link-alt"></i> Open in Wokwi
+                </a>
+            </div>
+        </section>
+
+        <footer role="contentinfo">
+            <p><i class="fas fa-heartbeat" aria-hidden="true"></i> Protecting Public Health with Smart Technology</p>
+        </footer>
+    </div>
+
+</body>
+
+</html>

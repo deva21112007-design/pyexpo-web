@@ -33,15 +33,20 @@
                             aria-hidden="true"></i> Detection Testing</a></li>
                 <li><a href="/community-reviews" aria-label="Go to Community Reviews page"><i class="fas fa-star"
                             aria-hidden="true"></i> Community Reviews</a></li>
+                <li><a href="/simulation" aria-label="Go to Simulation page"><i class="fas fa-microchip"
+                            aria-hidden="true"></i> Simulation</a></li>
                 <li><a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
                 {% else %}
                 <!-- Guest: Show Login Only -->
+                <li><a href="/simulation" aria-label="Go to Simulation page"><i class="fas fa-microchip"
+                            aria-hidden="true"></i> Simulation</a></li>
                 <li><a href="/login"><i class="fas fa-sign-in-alt"></i> Login</a></li>
                 {% endif %}
-                
+
                 <!-- Theme Toggle Button -->
                 <li>
-                    <button id="theme-toggle" class="theme-btn" aria-label="Toggle Dark Mode" style="background: transparent; border: 1px solid var(--p); color: var(--p); padding: 8px 15px; width: auto; display: flex; align-items: center; justify-content: center; border-radius: 20px; cursor: pointer; transition: all 0.3s ease;">
+                    <button id="theme-toggle" class="theme-btn" aria-label="Toggle Dark Mode"
+                        style="background: transparent; border: 1px solid var(--p); color: var(--p); padding: 8px 15px; width: auto; display: flex; align-items: center; justify-content: center; border-radius: 20px; cursor: pointer; transition: all 0.3s ease;">
                         <i class="fas fa-moon"></i>
                     </button>
                 </li>
@@ -54,7 +59,7 @@
                 const toggleBtn = document.getElementById('theme-toggle');
                 const icon = toggleBtn.querySelector('i');
                 const body = document.body;
-                
+
                 // Check saved preference
                 const currentTheme = localStorage.getItem('theme');
                 if (currentTheme === 'dark') {
@@ -65,7 +70,7 @@
 
                 toggleBtn.addEventListener('click', () => {
                     body.classList.toggle('dark-mode');
-                    
+
                     if (body.classList.contains('dark-mode')) {
                         localStorage.setItem('theme', 'dark');
                         icon.classList.remove('fa-moon');
@@ -78,6 +83,79 @@
                 });
             });
         </script>
+
+        <!-- Real-Time Ticker Strip -->
+        <div class="rt-ticker" id="rt-ticker">
+            <div class="rt-ticker-inner">
+                <span class="rt-ticker-item"><i class="fas fa-circle rt-live-dot"></i> LIVE</span>
+                <span class="rt-ticker-item" id="rt-time"><i class="fas fa-clock"></i> --:--:--</span>
+                <span class="rt-ticker-item" id="rt-total"><i class="fas fa-flask-vial"></i> Analyses:
+                    <strong>--</strong></span>
+                <span class="rt-ticker-item" id="rt-safe-pct"><i class="fas fa-shield-check"></i> Safe Rate:
+                    <strong>--%</strong></span>
+                <span class="rt-ticker-item" id="rt-rating"><i class="fas fa-star"></i> Rating:
+                    <strong>--/5</strong></span>
+                <span class="rt-ticker-item" id="rt-status-label"><i class="fas fa-satellite-dish"></i> System: <strong
+                        class="rt-ok">ONLINE</strong></span>
+            </div>
+        </div>
+
+        <!-- HARDWARE CONNECT PANEL -->
+        <div class="hw-panel" id="hw-panel">
+            <div class="hw-panel-left">
+                <div class="hw-status-dot" id="hw-status-dot"></div>
+                <div class="hw-panel-info">
+                    <span class="hw-label"><i class="fas fa-microchip"></i> Arduino Uno &nbsp;<span
+                            class="hw-src-badge hw-src-sim" id="hw-mode-badge" style="font-size:0.7rem;"><i
+                                class="fas fa-wave-square"></i> SIMULATION</span></span>
+                    <span class="hw-sublabel" id="hw-sublabel">Not connected — select a COM port and click
+                        Connect</span>
+                </div>
+            </div>
+            <div class="hw-panel-right">
+                <select id="hw-port-select" class="hw-select">
+                    <option value="">⏳ Scanning ports...</option>
+                </select>
+                <button class="hw-btn hw-btn-connect" id="hw-connect-btn" onclick="hwConnect()">
+                    <i class="fas fa-plug"></i> Connect
+                </button>
+                <button class="hw-btn hw-btn-disconnect" id="hw-disconnect-btn" onclick="hwDisconnect()"
+                    style="display:none">
+                    <i class="fas fa-times-circle"></i> Disconnect
+                </button>
+                <button class="hw-btn hw-btn-refresh" onclick="loadPorts()" title="Refresh port list">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Error / Debug Box (shown only on error) -->
+        <div class="hw-error-box" id="hw-error-box" style="display:none;">
+            <div class="hw-error-title"><i class="fas fa-exclamation-triangle"></i> Connection Error — What to do:</div>
+            <div class="hw-error-msg" id="hw-error-msg"></div>
+            <div class="hw-fix-steps">
+                <div class="hw-fix-step">
+                    <span class="hw-fix-num">1</span>
+                    <span><strong>Close Arduino IDE Serial Monitor</strong> — it locks the COM port. Go to Arduino IDE →
+                        Tools → Serial Monitor → close it.</span>
+                </div>
+                <div class="hw-fix-step">
+                    <span class="hw-fix-num">2</span>
+                    <span><strong>Close Arduino IDE completely</strong> if step 1 doesn't work. Then try connecting
+                        again.</span>
+                </div>
+                <div class="hw-fix-step">
+                    <span class="hw-fix-num">3</span>
+                    <span><strong>Make sure the Arduino sketch is uploaded first</strong> — open Arduino IDE, select the
+                        correct COM port, upload the sketch, then close IDE.</span>
+                </div>
+                <div class="hw-fix-step">
+                    <span class="hw-fix-num">4</span>
+                    <span><strong>Unplug and re-plug the USB cable</strong>, then click <i class="fas fa-sync-alt"></i>
+                        Refresh and try again.</span>
+                </div>
+            </div>
+        </div>
 
         {% if session.user %}
         <!-- Quick Actions - Only for Logged In Users -->
@@ -128,6 +206,116 @@
                     <i class="fas fa-exclamation-circle"></i>
                     <h4>Warning</h4>
                     <p>System alerts if levels exceed safe limits</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- REAL-TIME MONITOR SECTION -->
+        <section class="rt-monitor-section" aria-labelledby="rt-monitor-heading">
+            <h2 id="rt-monitor-heading"><i class="fas fa-satellite-dish"></i> Real-Time Monitor</h2>
+
+            <!-- Live Sensor Chart + Gauges Row -->
+            <div class="rt-top-row">
+                <!-- Live Waveform Chart -->
+                <div class="rt-chart-box">
+                    <div class="rt-chart-header">
+                        <span><i class="fas fa-wave-square"></i> Live Sensor Waveform</span>
+                        <span class="rt-live-badge"><i class="fas fa-circle"></i> LIVE</span>
+                    </div>
+                    <canvas id="rt-waveform-canvas" width="600" height="160"></canvas>
+                    <div class="rt-chart-footer">
+                        <span id="rt-sample-label">Sample: --</span>
+                        <span id="rt-signal"><i class="fas fa-signal"></i> Signal: --%</span>
+                    </div>
+                </div>
+
+                <!-- Gauge Cards -->
+                <div class="rt-gauges-col">
+                    <div class="rt-gauge-card" id="rt-gauge-sensor">
+                        <div class="rt-gauge-icon"><i class="fas fa-microscope"></i></div>
+                        <div class="rt-gauge-info">
+                            <span class="rt-gauge-label">Sensor Reading</span>
+                            <span class="rt-gauge-val" id="rt-sensor-val">-- mg/L</span>
+                        </div>
+                        <div class="rt-gauge-ring" id="rt-ring-sensor">
+                            <svg viewBox="0 0 36 36">
+                                <circle class="rt-ring-bg" cx="18" cy="18" r="15" />
+                                <circle class="rt-ring-fill" id="rt-ring-fill-sensor" cx="18" cy="18" r="15"
+                                    stroke-dasharray="0 94" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="rt-gauge-card" id="rt-gauge-ph">
+                        <div class="rt-gauge-icon"><i class="fas fa-tint"></i></div>
+                        <div class="rt-gauge-info">
+                            <span class="rt-gauge-label">pH Value</span>
+                            <span class="rt-gauge-val" id="rt-ph-val">--</span>
+                        </div>
+                        <div class="rt-gauge-ring">
+                            <svg viewBox="0 0 36 36">
+                                <circle class="rt-ring-bg" cx="18" cy="18" r="15" />
+                                <circle class="rt-ring-fill" id="rt-ring-fill-ph" cx="18" cy="18" r="15"
+                                    stroke-dasharray="0 94" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="rt-gauge-card">
+                        <div class="rt-gauge-icon"><i class="fas fa-thermometer-half"></i></div>
+                        <div class="rt-gauge-info">
+                            <span class="rt-gauge-label">Temperature</span>
+                            <span class="rt-gauge-val" id="rt-temp-val">-- °C</span>
+                        </div>
+                        <div class="rt-gauge-ring">
+                            <svg viewBox="0 0 36 36">
+                                <circle class="rt-ring-bg" cx="18" cy="18" r="15" />
+                                <circle class="rt-ring-fill" id="rt-ring-fill-temp" cx="18" cy="18" r="15"
+                                    stroke-dasharray="0 94" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live stat counters row -->
+            <div class="rt-stats-row">
+                <div class="rt-stat-pill rt-pill-total">
+                    <i class="fas fa-database"></i>
+                    <div>
+                        <span class="rt-pill-label">Total Analyses</span>
+                        <span class="rt-pill-val" id="rt-cnt-total">{{ stats.total_analyses }}</span>
+                    </div>
+                </div>
+                <div class="rt-stat-pill rt-pill-safe">
+                    <i class="fas fa-check-circle"></i>
+                    <div>
+                        <span class="rt-pill-label">Safe Samples</span>
+                        <span class="rt-pill-val" id="rt-cnt-safe">{{ stats.safe_samples }}</span>
+                    </div>
+                </div>
+                <div class="rt-stat-pill rt-pill-danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>
+                        <span class="rt-pill-label">Danger Samples</span>
+                        <span class="rt-pill-val" id="rt-cnt-danger">{{ stats.danger_samples }}</span>
+                    </div>
+                </div>
+                <div class="rt-stat-pill rt-pill-progress">
+                    <i class="fas fa-chart-pie"></i>
+                    <div>
+                        <span class="rt-pill-label">Safety Rate</span>
+                        <span class="rt-pill-val" id="rt-cnt-pct">--%</span>
+                    </div>
+                    <div class="rt-progress-wrap">
+                        <div class="rt-progress-bar" id="rt-progress-bar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity Feed -->
+            <div class="rt-feed-box">
+                <div class="rt-feed-header"><i class="fas fa-list-alt"></i> Recent Activity Feed</div>
+                <div class="rt-feed-list" id="rt-feed-list">
+                    <div class="rt-feed-empty"><i class="fas fa-satellite-dish"></i> Waiting for live data...</div>
                 </div>
             </div>
         </section>
@@ -279,6 +467,380 @@
             <p><i class="fas fa-heartbeat" aria-hidden="true"></i> Protecting Public Health with Smart Technology</p>
         </footer>
     </div>
+
+    <script>
+        // ============================================================
+        // REAL-TIME DATA ENGINE
+        // ============================================================
+        const RT_WAVEFORM_MAX = 40;   // Points shown on canvas waveform
+        let waveformData = [];         // {val, status} history
+        let waveformAnimFrame = null;
+
+        const canvas = document.getElementById('rt-waveform-canvas');
+        const ctx = canvas ? canvas.getContext('2d') : null;
+
+        // -- Sensor stream polling every 1.5 s --
+        function pollSensorStream() {
+            fetch('/api/sensor-stream')
+                .then(r => r.json())
+                .then(d => {
+                    updateSensorGauges(d);
+                    pushWaveform(d);
+                })
+                .catch(() => { });
+        }
+
+        function updateSensorGauges(d) {
+            setText('rt-sensor-val', d.sensor_reading + ' mg/L');
+            setText('rt-ph-val', d.ph_value);
+            setText('rt-temp-val', d.temperature + ' °C');
+            setText('rt-sample-label', 'Sample: ' + capitalize(d.sample_type));
+            setText('rt-signal', '\u26a1 Signal: ' + d.signal_strength + '%');
+
+            // Ring fills
+            setRing('rt-ring-fill-sensor', d.sensor_reading, 4);  // max display 4 mg/L
+            setRing('rt-ring-fill-ph', d.ph_value, 14);
+            setRing('rt-ring-fill-temp', d.temperature, 40);       // max display 40°C
+
+            // Status flash on sensor gauge
+            const gauge = document.getElementById('rt-gauge-sensor');
+            if (gauge) {
+                gauge.className = 'rt-gauge-card rt-gauge-' + d.status;
+            }
+        }
+
+        function setRing(id, val, max) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const pct = Math.min(val / max, 1);
+            const circ = 94; // 2*pi*r = 2*3.14*15 ≈ 94
+            el.setAttribute('stroke-dasharray', (pct * circ).toFixed(1) + ' ' + circ);
+        }
+
+        function pushWaveform(d) {
+            waveformData.push({ val: d.sensor_reading, status: d.status });
+            if (waveformData.length > RT_WAVEFORM_MAX) waveformData.shift();
+            drawWaveform();
+        }
+
+        function drawWaveform() {
+            if (!ctx) return;
+            const W = canvas.width, H = canvas.height;
+            ctx.clearRect(0, 0, W, H);
+
+            if (waveformData.length < 2) return;
+
+            const minVal = 0;
+            const maxVal = 4.0;
+
+            const stepX = W / (RT_WAVEFORM_MAX - 1);
+            const padY = 20;
+
+            // Grid lines
+            ctx.strokeStyle = 'rgba(0,150,136,0.1)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 4; i++) {
+                const y = padY + (H - 2 * padY) * (i / 4);
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+            }
+
+            // Filled area under line
+            ctx.beginPath();
+            waveformData.forEach((pt, i) => {
+                const x = i * stepX;
+                const y = padY + (H - 2 * padY) * (1 - (pt.val - minVal) / (maxVal - minVal));
+                i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+            });
+            ctx.lineTo((waveformData.length - 1) * stepX, H);
+            ctx.lineTo(0, H);
+            ctx.closePath();
+
+            const grad = ctx.createLinearGradient(0, 0, 0, H);
+            grad.addColorStop(0, 'rgba(0,191,165,0.25)');
+            grad.addColorStop(1, 'rgba(0,191,165,0.01)');
+            ctx.fillStyle = grad;
+            ctx.fill();
+
+            // Stroke line
+            ctx.beginPath();
+            waveformData.forEach((pt, i) => {
+                const x = i * stepX;
+                const y = padY + (H - 2 * padY) * (1 - (pt.val - minVal) / (maxVal - minVal));
+                i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+            });
+            ctx.strokeStyle = '#00bfa5';
+            ctx.lineWidth = 2.5;
+            ctx.lineJoin = 'round';
+            ctx.stroke();
+
+            // Latest dot
+            const last = waveformData[waveformData.length - 1];
+            const lx = (waveformData.length - 1) * stepX;
+            const ly = padY + (H - 2 * padY) * (1 - (last.val - minVal) / (maxVal - minVal));
+            const dotColor = last.status === 'safe' ? '#4caf50' : last.status === 'caution' ? '#ff9800' : '#f44336';
+            ctx.beginPath();
+            ctx.arc(lx, ly, 5, 0, 2 * Math.PI);
+            ctx.fillStyle = dotColor;
+            ctx.fill();
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Label current value
+            ctx.fillStyle = '#00796b';
+            ctx.font = 'bold 11px Poppins, sans-serif';
+            ctx.textAlign = 'right';
+            ctx.fillText(last.val + ' mg/L', lx - 8, Math.max(ly - 8, 14));
+        }
+
+        // -- Dashboard stats polling every 3 s --
+        function pollRealtimeData() {
+            fetch('/api/realtime-data')
+                .then(r => r.json())
+                .then(d => {
+                    // Ticker
+                    setText('rt-time', '🕐 ' + d.server_time);
+                    const totalEl = document.getElementById('rt-total');
+                    if (totalEl) totalEl.innerHTML = '<i class="fas fa-flask-vial"></i> Analyses: <strong>' + d.total_analyses + '</strong>';
+                    const safeEl = document.getElementById('rt-safe-pct');
+                    if (safeEl) safeEl.innerHTML = '<i class="fas fa-shield-check"></i> Safe Rate: <strong>' + d.safe_percentage + '%</strong>';
+                    const ratingEl = document.getElementById('rt-rating');
+                    if (ratingEl) ratingEl.innerHTML = '<i class="fas fa-star"></i> Rating: <strong>' + d.avg_rating + '/5</strong>';
+
+                    // Live counter pills
+                    animateCount('rt-cnt-total', d.total_analyses);
+                    animateCount('rt-cnt-safe', d.safe_count);
+                    animateCount('rt-cnt-danger', d.danger_count);
+                    setText('rt-cnt-pct', d.safe_percentage + '%');
+
+                    // Progress bar
+                    const bar = document.getElementById('rt-progress-bar');
+                    if (bar) bar.style.width = d.safe_percentage + '%';
+
+                    // Recent feed
+                    updateFeed(d.recent_analyses);
+                })
+                .catch(() => {
+                    const statusEl = document.getElementById('rt-status-label');
+                    if (statusEl) statusEl.innerHTML = '<i class="fas fa-satellite-dish"></i> System: <strong class="rt-err">RECONNECTING...</strong>';
+                });
+        }
+
+        function updateFeed(items) {
+            const list = document.getElementById('rt-feed-list');
+            if (!list || !items.length) return;
+            list.innerHTML = items.map(item => {
+                const icon = item.level === 'safe' ? 'fa-check-circle rt-icon-safe'
+                    : item.level === 'danger' ? 'fa-exclamation-circle rt-icon-danger'
+                        : 'fa-exclamation-triangle rt-icon-caution';
+                const phText = item.ph_value ? ` | pH: ${item.ph_value}` : '';
+                return `<div class="rt-feed-item">
+            <i class="fas ${icon}"></i>
+            <div class="rt-feed-details">
+                <span class="rt-feed-title">${capitalize(item.sample_type)} — ${item.detected_level} mg/L${phText}</span>
+                <span class="rt-feed-meta">${item.timestamp} &bull; ${item.user || 'Anonymous'}</span>
+            </div>
+            <span class="rt-feed-badge rt-badge-${item.level}">${item.level.toUpperCase()}</span>
+        </div>`;
+            }).join('');
+        }
+
+        // Utilities
+        function setText(id, val) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = val;
+        }
+        function capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+
+        function animateCount(id, target) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const start = parseInt(el.textContent) || 0;
+            if (start === target) return;
+            const step = (target - start) / 20;
+            let current = start;
+            const timer = setInterval(() => {
+                current += step;
+                if ((step > 0 && current >= target) || (step < 0 && current <= target)) {
+                    el.textContent = target;
+                    clearInterval(timer);
+                } else {
+                    el.textContent = Math.round(current);
+                }
+            }, 30);
+        }
+
+        // ── Hardware Connect Functions ───────────────────────────
+        function loadPorts() {
+            fetch('/api/serial-ports')
+                .then(r => r.json())
+                .then(d => {
+                    const sel = document.getElementById('hw-port-select');
+                    if (!sel) return;
+                    if (d.error) {
+                        sel.innerHTML = `<option value="">${d.error}</option>`;
+                        return;
+                    }
+                    if (!d.ports.length) {
+                        sel.innerHTML = '<option value="">No COM ports found</option>';
+                        return;
+                    }
+                    sel.innerHTML = d.ports.map(p =>
+                        `<option value="${p.port}">${p.port} — ${p.description}</option>`
+                    ).join('');
+                })
+                .catch(() => {
+                    const sel = document.getElementById('hw-port-select');
+                    if (sel) sel.innerHTML = '<option value="">Error scanning ports</option>';
+                });
+        }
+
+        function hwConnect() {
+            const sel = document.getElementById('hw-port-select');
+            const port = sel ? sel.value : '';
+            if (!port) { alert('Please select a COM port first.'); return; }
+
+            const btn = document.getElementById('hw-connect-btn');
+            if (btn) { btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting...'; btn.disabled = true; }
+
+            fetch('/api/connect-serial', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ port: port, baud: 9600 })
+            })
+                .then(r => r.json())
+                .then(d => {
+                    if (btn) { btn.innerHTML = '<i class="fas fa-plug"></i> Connect'; btn.disabled = false; }
+                    if (d.success) {
+                        setHwUI('connecting', `Connecting to ${port}...`);
+                        // Give it 2 seconds then check status
+                        setTimeout(pollHardwareStatus, 2000);
+                    } else {
+                        setHwUI('error', d.error || 'Connection failed');
+                    }
+                })
+                .catch(() => {
+                    if (btn) { btn.innerHTML = '<i class="fas fa-plug"></i> Connect'; btn.disabled = false; }
+                    setHwUI('error', 'Could not reach server');
+                });
+        }
+
+        function hwDisconnect() {
+            fetch('/api/disconnect-serial', { method: 'POST' })
+                .then(r => r.json())
+                .then(() => { setHwUI('disconnected', 'Disconnected'); })
+                .catch(() => { });
+        }
+
+        function pollHardwareStatus() {
+            fetch('/api/hardware-status')
+                .then(r => r.json())
+                .then(d => {
+                    if (!d.serial_available) {
+                        setHwUI('error', 'pyserial not installed — run: pip install pyserial');
+                        return;
+                    }
+                    if (d.connected && !d.stale && d.latest_reading) {
+                        const r = d.latest_reading;
+                        setHwUI('connected', `Connected on ${d.port} | pH: ${r.ph} | Temp: ${r.temp}°C`);
+                    } else if (d.connected && d.stale) {
+                        setHwUI('connecting', `${d.port} — waiting for data...`);
+                    } else if (d.error) {
+                        setHwUI('error', d.error);
+                    } else {
+                        setHwUI('disconnected', 'Not connected');
+                    }
+                })
+                .catch(() => { });
+        }
+
+        function setHwUI(state, message) {
+            const dot = document.getElementById('hw-status-dot');
+            const label = document.getElementById('hw-sublabel');
+            const cBtn = document.getElementById('hw-connect-btn');
+            const dBtn = document.getElementById('hw-disconnect-btn');
+            const ticker = document.getElementById('rt-status-label');
+            const errBox = document.getElementById('hw-error-box');
+            const errMsg = document.getElementById('hw-error-msg');
+            const modeBadge = document.getElementById('hw-mode-badge');
+            const panel = document.getElementById('hw-panel');
+
+            if (label) label.textContent = message;
+            if (dot) dot.className = 'hw-status-dot hw-dot-' + state;
+
+            // Error box
+            if (errBox) {
+                if (state === 'error') {
+                    errBox.style.display = 'block';
+                    if (errMsg) errMsg.textContent = '⚠️  Error: ' + message;
+                } else {
+                    errBox.style.display = 'none';
+                }
+            }
+
+            // Panel border highlight
+            if (panel) {
+                panel.style.borderColor =
+                    state === 'connected' ? 'rgba(76,175,80,0.4)' :
+                        state === 'error' ? 'rgba(244,67,54,0.4)' :
+                            state === 'connecting' ? 'rgba(255,152,0,0.4)' :
+                                '';
+            }
+
+            if (state === 'connected') {
+                if (cBtn) cBtn.style.display = 'none';
+                if (dBtn) dBtn.style.display = 'inline-flex';
+                if (ticker) ticker.innerHTML = '<i class="fas fa-satellite-dish"></i> Hardware: <strong class="rt-ok">CONNECTED</strong>';
+                if (modeBadge) {
+                    modeBadge.className = 'hw-src-badge hw-src-real';
+                    modeBadge.innerHTML = '<i class="fas fa-microchip"></i> HARDWARE';
+                }
+            } else {
+                if (cBtn) cBtn.style.display = 'inline-flex';
+                if (dBtn) dBtn.style.display = 'none';
+                if (modeBadge) {
+                    modeBadge.className = 'hw-src-badge hw-src-sim';
+                    modeBadge.innerHTML = '<i class="fas fa-wave-square"></i> SIMULATION';
+                }
+                if (ticker && state === 'error') {
+                    ticker.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Hardware: <strong class="rt-err">ERROR</strong>';
+                } else if (ticker) {
+                    ticker.innerHTML = '<i class="fas fa-satellite-dish"></i> System: <strong class="rt-ok">ONLINE</strong>';
+                }
+            }
+        }
+
+        // Update waveform footer with source badge
+        const _origPollSensor = pollSensorStream;
+        function pollSensorStream() {
+            fetch('/api/sensor-stream')
+                .then(r => r.json())
+                .then(d => {
+                    updateSensorGauges(d);
+                    pushWaveform(d);
+                    // Source badge
+                    const sigEl = document.getElementById('rt-signal');
+                    if (sigEl) {
+                        const isHW = d.source === 'hardware';
+                        sigEl.innerHTML = isHW
+                            ? '<span class="hw-src-badge hw-src-real"><i class="fas fa-microchip"></i> HARDWARE</span> &nbsp; ⚡ ' + d.signal_strength + '%'
+                            : '<span class="hw-src-badge hw-src-sim"><i class="fas fa-wave-square"></i> SIMULATION</span>';
+                    }
+                })
+                .catch(() => { });
+        }
+
+        // Start polling
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPorts();
+            pollRealtimeData();
+            pollSensorStream();
+            pollHardwareStatus();
+            setInterval(pollRealtimeData, 3000);
+            setInterval(pollSensorStream, 1500);
+            setInterval(pollHardwareStatus, 2000);
+        });
+    </script>
 
 </body>
 

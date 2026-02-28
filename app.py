@@ -4,8 +4,11 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import os
+import math
 import time
 import json
+import random
+import threading
 from datetime import datetime
 import smtplib
 from email.mime.text import MIMEText
@@ -14,6 +17,15 @@ from email.mime.base import MIMEBase
 from email import encoders
 from textblob import TextBlob
 from fpdf import FPDF
+
+# Try to import pyserial (optional — graceful fallback if not installed)
+try:
+    import serial
+    import serial.tools.list_ports
+    SERIAL_AVAILABLE = True
+except ImportError:
+    SERIAL_AVAILABLE = False
+    print("⚠️  pyserial not installed. Run: pip install pyserial")
 
 app = Flask(__name__)
 app.secret_key = "super_secret_key_for_demo_only"  # In production, use environment variable
@@ -254,6 +266,20 @@ def detection_testing():
             detected_level = round(sensor_val / weight, 2)
             safe_limit = SAFE_LIMITS.get(sample_type, 0.05)
 
+            # Auto-calculate pH from sensor reading
+            # Formula: simulates a real pH electrode (higher sensor voltage → more acidic)
+            # Typical milk pH: 6.4–6.8 | water: ~7.0 | contaminated samples drift acidic
+            raw_ph = 7.0 - (sensor_val - 1.5) / 0.18
+            ph_value = round(max(0.0, min(14.0, raw_ph)), 2)
+
+            # pH Status
+            if ph_value < 6.5:
+                ph_status = "acidic"
+            elif ph_value > 7.5:
+                ph_status = "alkaline"
+            else:
+                ph_status = "neutral"
+
             status_level = "safe"
             if detected_level > safe_limit:
                 status_level = "danger"
@@ -267,7 +293,9 @@ def detection_testing():
             result = {
                 "detected": detected_level,
                 "safe_dose": safe_limit,
-                "level": status_level
+                "level": status_level,
+                "ph_value": round(ph_value, 2),
+                "ph_status": ph_status
             }
             
             # Prepare History Data for Trend Graph (Filter by Sample Type & User)
@@ -298,6 +326,8 @@ def detection_testing():
                 "sample_type": sample_type,
                 "detected_level": detected_level,
                 "level": status_level,
+                "ph_value": round(ph_value, 2),
+                "ph_status": ph_status,
                 "plot_url": plot_url,
                 "user": current_user  # Save user with record
             }
@@ -324,6 +354,7 @@ def detection_testing():
                 pdf.set_font("Arial", "", 12)
                 pdf.cell(100, 10, f"Sample Type: {sample_type.title()}", ln=True)
                 pdf.cell(100, 10, f"Detected Level: {detected_level} mg/L", ln=True)
+                pdf.cell(100, 10, f"pH Value: {round(ph_value, 2)} ({ph_status.title()})", ln=True)
                 
                 pdf.set_font("Arial", "B", 12)
                 if status_level == 'safe': pdf.set_text_color(46, 125, 50)
@@ -369,6 +400,10 @@ def detection_testing():
             plot_url = last_test["plot_url"]
         
     return render_template("detection_testing.html", result=result, warning=warning, last_test=last_test, plot_url=plot_url)
+
+@app.route("/simulation")
+def simulation():
+    return render_template("simulation.html")
 
 
 
@@ -533,6 +568,308 @@ def download_report():
     
     return send_file(filepath, as_attachment=True)
 # ---------------------------------------------
+
+
+# =============================================
+# HARDWARE SERIAL STATE
+# =============================================
+hw_lock = threading.Lock()
+hw = {
+    "connected": False,
+    "port": None,
+    "baud": 9600,
+    "error": None,
+    "serial_obj": None,
+    "thread": None,
+    "data": None,        # Latest parsed reading from Arduino
+    "last_update": None  # Timestamp of last successful read
+}
+
+
+def serial_reader_thread():
+    """Background thread: continuously reads JSON lines from Arduino over serial."""
+    with hw_lock:
+        port = hw["port"]
+        baud = hw["baud"]
+
+    print(f"🔌 Serial thread starting on {port} @ {baud} baud...")
+    try:
+        ser = serial.Serial(port, baud, timeout=2)
+        with hw_lock:
+            hw["serial_obj"] = ser
+            hw["error"] = None
+        print(f"✅ Arduino connected on {port}")
+
+        while True:
+            with hw_lock:
+                if not hw["connected"]:
+                    break
+            try:
+                raw = ser.readline()
+                if not raw:
+                    continue
+                line = raw.decode("utf-8", errors="ignore").strip()
+                if not line:
+                    continue
+                # Only process lines that look like JSON
+                if line.startswith("{"):
+                    parsed = json.loads(line)
+                    parsed["timestamp"] = datetime.now().strftime("%H:%M:%S")
+                    with hw_lock:
+                        hw["data"] = parsed
+                        hw["last_update"] = time.time()
+            except json.JSONDecodeError:
+                pass   # Skip malformed lines
+            except Exception as e:
+                with hw_lock:
+                    hw["error"] = str(e)
+                    hw["connected"] = False
+                print(f"❌ Serial read error: {e}")
+                break
+
+        ser.close()
+        print(f"🔌 Serial port {port} closed.")
+    except Exception as e:
+        with hw_lock:
+            hw["connected"] = False
+            hw["error"] = f"Cannot open {port}: {str(e)}"
+        print(f"❌ Cannot open serial port {port}: {e}")
+
+
+# =============================================
+# REAL-TIME DATA API ENDPOINTS
+# =============================================
+
+@app.route("/api/realtime-data")
+def api_realtime_data():
+    """Returns live system statistics and recent analysis history for real-time dashboard."""
+    history = load_analysis_history()
+    feedback_list = load_feedback()
+
+    total_analyses = len(history)
+    safe_count = len([h for h in history if h.get("level") == "safe"])
+    danger_count = len([h for h in history if h.get("level") == "danger"])
+    caution_count = len([h for h in history if h.get("level") == "caution"])
+    avg_rating = round(sum([int(f.get("rating", 5)) for f in feedback_list]) / len(feedback_list), 1) if feedback_list else 0
+
+    recent = history[-5:][::-1]
+    safe_pct = round((safe_count / total_analyses * 100), 1) if total_analyses > 0 else 0
+
+    with hw_lock:
+        hw_connected = hw["connected"]
+        hw_port = hw["port"]
+
+    return jsonify({
+        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "server_time": datetime.now().strftime("%H:%M:%S"),
+        "total_analyses": total_analyses,
+        "safe_count": safe_count,
+        "danger_count": danger_count,
+        "caution_count": caution_count,
+        "safe_percentage": safe_pct,
+        "avg_rating": avg_rating,
+        "total_reviews": len(feedback_list),
+        "hardware_connected": hw_connected,
+        "hardware_port": hw_port,
+        "recent_analyses": [
+            {
+                "timestamp": h.get("timestamp", ""),
+                "sample_type": h.get("sample_type", "unknown"),
+                "detected_level": h.get("detected_level", 0),
+                "level": h.get("level", "unknown"),
+                "ph_value": h.get("ph_value", None),
+                "ph_status": h.get("ph_status", None),
+                "user": h.get("user", "Anonymous")
+            } for h in recent
+        ]
+    })
+
+
+@app.route("/api/sensor-stream")
+def api_sensor_stream():
+    """Returns real Arduino sensor data if hardware connected, else simulated fallback."""
+    t = time.time()
+    safe_limit = SAFE_LIMITS.get("milk", 0.05)
+
+    # ── Try HARDWARE data first ──────────────────────────────
+    with hw_lock:
+        hw_connected = hw["connected"]
+        hw_data = hw["data"]
+        hw_last = hw["last_update"]
+
+    if hw_connected and hw_data and hw_last and (t - hw_last) < 5.0:
+        ph_value      = round(float(hw_data.get("ph", 7.0)), 2)
+        sensor_reading = round(float(hw_data.get("sensor", 1.0)), 2)
+        temperature   = round(float(hw_data.get("temp", 25.0)), 1)
+        detected_level = round(sensor_reading, 2)
+
+        if detected_level > safe_limit:
+            status = "danger"
+        elif detected_level > safe_limit * 0.8:
+            status = "caution"
+        else:
+            status = "safe"
+
+        if ph_value < 6.5:
+            ph_status = "acidic"
+        elif ph_value > 7.5:
+            ph_status = "alkaline"
+        else:
+            ph_status = "neutral"
+
+        return jsonify({
+            "source":         "hardware",
+            "timestamp":      hw_data.get("timestamp", datetime.now().strftime("%H:%M:%S")),
+            "unix_time":      round(t, 2),
+            "sensor_reading": sensor_reading,
+            "detected_level": detected_level,
+            "ph_value":       ph_value,
+            "ph_status":      ph_status,
+            "sample_type":    "milk",
+            "safe_limit":     safe_limit,
+            "status":         status,
+            "temperature":    temperature,
+            "signal_strength": 100.0,
+        })
+
+    # ── Fallback: SIMULATED data ─────────────────────────────
+    base  = 2.0
+    wave  = math.sin(t * 0.3) * 0.8
+    noise = (random.random() - 0.5) * 0.3
+    sensor_reading = round(max(0.1, base + wave + noise), 2)
+
+    raw_ph   = 7.0 - (sensor_reading - 1.5) / 0.18
+    ph_value = round(max(0.0, min(14.0, raw_ph)), 2)
+
+    sample_types  = ["milk", "meat", "water"]
+    sample_type   = sample_types[int(t / 10) % 3]
+    safe_limit    = SAFE_LIMITS.get(sample_type, 0.05)
+    detected_level = round(sensor_reading, 2)
+
+    if detected_level > safe_limit:
+        status = "danger"
+    elif detected_level > safe_limit * 0.8:
+        status = "caution"
+    else:
+        status = "safe"
+
+    return jsonify({
+        "source":         "simulation",
+        "timestamp":      datetime.now().strftime("%H:%M:%S"),
+        "unix_time":      round(t, 2),
+        "sensor_reading": sensor_reading,
+        "detected_level": detected_level,
+        "ph_value":       ph_value,
+        "ph_status":      "neutral",
+        "sample_type":    sample_type,
+        "safe_limit":     safe_limit,
+        "status":         status,
+        "signal_strength": round(random.uniform(85, 100), 1),
+        "temperature":    round(22.0 + math.sin(t * 0.1) * 2 + random.uniform(-0.2, 0.2), 1),
+    })
+
+
+@app.route("/api/live-stats")
+def api_live_stats():
+    """Quick summary endpoint for the dashboard ticker strip."""
+    stats = get_statistics()
+    stats["server_time"] = datetime.now().strftime("%H:%M:%S")
+    stats["date"] = datetime.now().strftime("%d %b %Y")
+    return jsonify(stats)
+
+
+# =============================================
+# HARDWARE / SERIAL MANAGEMENT ENDPOINTS
+# =============================================
+
+@app.route("/api/serial-ports")
+def api_serial_ports():
+    """Returns list of available COM ports on the machine."""
+    if not SERIAL_AVAILABLE:
+        return jsonify({"error": "pyserial not installed. Run: pip install pyserial", "ports": []})
+    ports = []
+    for p in serial.tools.list_ports.comports():
+        ports.append({
+            "port":        p.device,
+            "description": p.description,
+            "hwid":        p.hwid
+        })
+    return jsonify({"ports": ports})
+
+
+@app.route("/api/connect-serial", methods=["POST"])
+def api_connect_serial():
+    """Connect to Arduino on the specified COM port."""
+    if not SERIAL_AVAILABLE:
+        return jsonify({"success": False, "error": "pyserial not installed. Run: pip install pyserial"}), 500
+
+    data = request.get_json()
+    port = data.get("port", "").strip()
+    baud = int(data.get("baud", 9600))
+
+    if not port:
+        return jsonify({"success": False, "error": "No COM port specified"}), 400
+
+    # Stop any existing connection first
+    with hw_lock:
+        if hw["connected"]:
+            hw["connected"] = False   # Signal thread to stop
+        hw["port"]      = port
+        hw["baud"]      = baud
+        hw["connected"] = True
+        hw["error"]     = None
+        hw["data"]      = None
+        hw["last_update"] = None
+
+    # Start the reader thread
+    t = threading.Thread(target=serial_reader_thread, daemon=True)
+    with hw_lock:
+        hw["thread"] = t
+    t.start()
+
+    return jsonify({"success": True, "message": f"Connecting to {port} @ {baud} baud...", "port": port})
+
+
+@app.route("/api/disconnect-serial", methods=["POST"])
+def api_disconnect_serial():
+    """Disconnect from Arduino."""
+    with hw_lock:
+        hw["connected"] = False
+        hw["data"]      = None
+        hw["error"]     = None
+        if hw["serial_obj"]:
+            try:
+                hw["serial_obj"].close()
+            except Exception:
+                pass
+            hw["serial_obj"] = None
+    return jsonify({"success": True, "message": "Disconnected from hardware"})
+
+
+@app.route("/api/hardware-status")
+def api_hardware_status():
+    """Returns current hardware connection status and latest sensor reading."""
+    with hw_lock:
+        connected  = hw["connected"]
+        port       = hw["port"]
+        error      = hw["error"]
+        data       = hw["data"]
+        last_upd   = hw["last_update"]
+
+    stale = False
+    if connected and last_upd and (time.time() - last_upd) > 5:
+        stale = True
+
+    return jsonify({
+        "connected":       connected,
+        "port":            port,
+        "error":           error,
+        "stale":           stale,
+        "serial_available": SERIAL_AVAILABLE,
+        "latest_reading":  data,
+        "last_update":     last_upd
+    })
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

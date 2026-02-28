@@ -29,6 +29,8 @@
                             aria-hidden="true"></i> Detection Testing</a></li>
                 <li><a href="/community-reviews" aria-label="Go to Community Reviews page"><i class="fas fa-star"
                             aria-hidden="true"></i> Community Reviews</a></li>
+                <li><a href="/simulation" aria-label="Go to Simulation page"><i class="fas fa-microchip"
+                            aria-hidden="true"></i> Simulation</a></li>
                 <li><a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
                 <!-- Theme Toggle Button -->
                 <li>
@@ -175,6 +177,33 @@
                         aria-label="Detected steroid level: {{ result.detected }} mg/L">{{ result.detected }}
                         mg/L</span>
                 </div>
+
+                {% if result.ph_value is defined %}
+                <div class="result-item ph-result-item ph-{{ result.ph_status }}" style="grid-column: 1 / -1;">
+                    <span class="result-label"><i class="fas fa-tint" style="margin-right:5px;"></i>pH Value</span>
+                    <div class="ph-row">
+                        <span class="ph-number result-value" tabindex="0"
+                            aria-label="pH value: {{ result.ph_value }}">{{ result.ph_value }}</span>
+                        <span class="ph-badge">
+                            {% if result.ph_status == 'acidic' %}<i class="fas fa-arrow-down"></i>{% elif
+                            result.ph_status == 'alkaline' %}<i class="fas fa-arrow-up"></i>{% else %}<i
+                                class="fas fa-check-circle"></i>{% endif %}
+                            {{ result.ph_status | title }}
+                        </span>
+                    </div>
+                    <!-- pH Scale Bar -->
+                    <div class="ph-scale-wrap">
+                        <div class="ph-scale-bar">
+                            <div class="ph-marker" style="left: calc({{ result.ph_value }} / 14 * 100% - 11px);"></div>
+                        </div>
+                        <div class="ph-scale-labels">
+                            <span>0 Acidic</span>
+                            <span>7 Neutral</span>
+                            <span>14 Alkaline</span>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
             </div>
 
             <div class="status-section">

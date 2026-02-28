@@ -1,5 +1,29 @@
 [
   {
+    "name": "dev",
+    "email": "deva21112007@gmail.com",
+    "message": "Analysis Result: 0.12mg/L (danger) - Sample Limit: 0.05mg",
+    "rating": "5",
+    "timestamp": "2026-02-18 21:35:20",
+    "sentiment": "Neutral"
+  },
+  {
+    "name": "dev",
+    "email": "gokilavanig@gmail.com",
+    "message": "Analysis Result: 0.12mg/L (danger) - Sample Limit: 0.05mg",
+    "rating": "5",
+    "timestamp": "2026-02-18 21:34:50",
+    "sentiment": "Neutral"
+  },
+  {
+    "name": "yamuna",
+    "email": "yamuna.s@kgkite.ac.in",
+    "message": "Analysis Result: 0.07mg/L (danger) - Sample Limit: 0.05mg",
+    "rating": "4",
+    "timestamp": "2026-02-14 13:18:58",
+    "sentiment": "Neutral"
+  },
+  {
     "name": "mouriya",
     "email": "mouriyavenkat.s@gmail.com",
     "message": "very nice",
