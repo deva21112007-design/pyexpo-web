@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detection Testing - PureCheck and Quality Analysis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=lighttheme">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+    <div class="main-container">
+        <header role="banner">
+            <div class="header-content">
+                <h1><i class="fas fa-shield-alt" aria-hidden="true"></i> PureCheck and Quality Analysis</h1>
+                <p>Ensuring safe milk and meat for human consumption</p>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="navbar" role="navigation" aria-label="Main navigation">
+            <ul class="nav-links">
+                                <li><a href="/" aria-label="Go to Safety Dashboard"><i class="fas fa-chart-line" aria-hidden="true"></i>
+                        Safety Dashboard</a></li>
+                <li><a href="/detection-testing" class="active" aria-current="page"><i class="fas fa-flask"
+                            aria-hidden="true"></i> Detection Testing</a></li>
+
+                <li><a href="/community-reviews" aria-label="Go to Community Reviews page"><i class="fas fa-star"
+                            aria-hidden="true"></i> Community Reviews</a></li>
+                <li><a href="/simulation" aria-label="Go to Simulation page"><i class="fas fa-microchip"
+                            aria-hidden="true"></i> Simulation</a></li>
+                <!-- Theme Toggle Button -->
+                <li>
+                    <button id="theme-toggle" class="theme-btn" aria-label="Toggle Dark Mode"
+                        style="background: transparent; border: 1px solid var(--p); color: var(--p); padding: 8px 15px; width: auto; display: flex; align-items: center; justify-content: center; border-radius: 20px; cursor: pointer; transition: all 0.3s ease;">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </li>
+            </ul>
+        </nav>
+
+        <script>
+            // Theme Toggle Logic
+            document.addEventListener('DOMContentLoaded', () => {
+                const toggleBtn = document.getElementById('theme-toggle');
+                const icon = toggleBtn.querySelector('i');
+                const body = document.body;
+
+                // Check saved preference
+                const currentTheme = localStorage.getItem('theme');
+                if (currentTheme === 'dark') {
+                    body.classList.add('dark-mode');
+                    icon.classList.remove('fa-moon');
+                    icon.classList.add('fa-sun');
+                }
+
+                toggleBtn.addEventListener('click', () => {
+                    body.classList.toggle('dark-mode');
+
+                    if (body.classList.contains('dark-mode')) {
+                        localStorage.setItem('theme', 'dark');
+                        icon.classList.remove('fa-moon');
+                        icon.classList.add('fa-sun');
+                    } else {
+                        localStorage.setItem('theme', 'light');
+                        icon.classList.remove('fa-sun');
+                        icon.classList.add('fa-moon');
+                    }
+                });
+            });
+        </script>
+
+        <!-- Welcome Banner for Logged In Users -->
+        {% if session.user %}
+        <div class="welcome-banner"
+            style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); padding: 15px 25px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #81c784; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); animation: fadeInUp 0.5s ease-out;">
+            <div
+                style="background: white; padding: 10px; border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 45px; height: 45px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                <i class="fas fa-user-circle" style="font-size: 1.5rem; color: #2e7d32; margin-bottom:0px"></i>
+            </div>
+            <div>
+                <h3 style="margin: 0; color: #1b5e20; font-size: 1.2rem;">Welcome back, {{ session.user }}!</h3>
+                <p style="margin: 3px 0 0; color: #388e3c; font-size: 0.9rem;">Ready to run some safety tests today?</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Last Result Summary (if exists) -->
+        {% if last_test %}
+        <div class="last-result-box"
+            style="background: white; padding: 15px 20px; border-radius: 12px; margin-bottom: 30px; border-left: 5px solid {{ '#2e7d32' if last_test.level == 'safe' else '#c62828' }}; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div
+                    style="background: {{ 'rgba(46, 125, 50, 0.1)' if last_test.level == 'safe' else 'rgba(198, 40, 40, 0.1)' }}; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-history"
+                        style="color: {{ '#2e7d32' if last_test.level == 'safe' else '#c62828' }};"></i>
+                </div>
+                <div>
+                    <h4 style="margin: 0; font-size: 0.95rem; color: var(--tm);">Last Test Result</h4>
+                    <p style="margin: 2px 0 0; font-weight: 700; color: var(--t); font-size: 1.1rem;">
+                        {{ last_test.detected_level }} mg/L
+                        <span
+                            style="font-size: 0.8rem; font-weight: 600; padding: 2px 8px; border-radius: 10px; background: {{ '#e8f5e9' if last_test.level == 'safe' else '#ffebee' }}; color: {{ '#2e7d32' if last_test.level == 'safe' else '#c62828' }}; margin-left: 8px;">
+                            {{ last_test.level|upper }}
+                        </span>
+                    </p>
+                </div>
+            </div>
+            <div style="text-align: right;">
+                <p style="margin: 0; font-size: 0.85rem; color: var(--tm);">{{ last_test.timestamp }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Warning/Error Alert (Outside Result Card) -->
+        {% if warning and not result %}
+        <div class="alert-box {{ 'danger' if 'Error' in warning or 'Invalid' in warning else 'caution' }}"
+            style="background: #ffebee; color: #c62828; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #c62828; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+            <i class="fas fa-exclamation-triangle"></i> <strong>System Notification:</strong> {{ warning }}
+        </div>
+        {% endif %}
+
+        
+        <!-- Real-Time Ticker Strip -->
+        <div class="rt-ticker" id="rt-ticker">
+            <div class="rt-ticker-inner">
+                <span class="rt-ticker-item"><i class="fas fa-circle rt-live-dot"></i> LIVE</span>
+                <span class="rt-ticker-item" id="rt-time"><i class="fas fa-clock"></i> --:--:--</span>
+                <span class="rt-ticker-item" id="rt-total"><i class="fas fa-flask-vial"></i> Analyses:
+                    <strong>--</strong></span>
+                <span class="rt-ticker-item" id="rt-safe-pct"><i class="fas fa-shield-check"></i> Safe Rate:
+                    <strong>--%</strong></span>
+                <span class="rt-ticker-item" id="rt-rating"><i class="fas fa-star"></i> Rating:
+                    <strong>--/5</strong></span>
+                <span class="rt-ticker-item" id="rt-status-label"><i class="fas fa-satellite-dish"></i> System: <strong
+                        class="rt-ok">ONLINE</strong></span>
+            </div>
+        </div>
+
+<!-- HARDWARE CONNECT PANEL -->
+        <div class="hw-panel" id="hw-panel">
+            <div class="hw-panel-left">
+                <div class="hw-status-dot" id="hw-status-dot"></div>
+                <div class="hw-panel-info">
+                    <span class="hw-label"><i class="fas fa-microchip"></i> ESP32 &nbsp;<span
+                            class="hw-src-badge hw-src-sim" id="hw-mode-badge" style="font-size:0.7rem;"><i
+                                class="fas fa-wave-square"></i> SIMULATION</span></span>
+                    <span class="hw-sublabel" id="hw-sublabel">Not connected — select a COM port and click
+                        Connect</span>
+                </div>
+            </div>
+            <div class="hw-panel-right">
+                <select id="hw-port-select" class="hw-select">
+                    <option value="">⏳ Scanning ports...</option>
+                </select>
+                <button class="hw-btn hw-btn-connect" id="hw-connect-btn" onclick="hwConnect()">
+                    <i class="fas fa-plug"></i> Connect
+                </button>
+                <button class="hw-btn hw-btn-disconnect" id="hw-disconnect-btn" onclick="hwDisconnect()"
+                    style="display:none">
+                    <i class="fas fa-times-circle"></i> Disconnect
+                </button>
+                <button class="hw-btn hw-btn-refresh" onclick="loadPorts()" title="Refresh port list">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Error / Debug Box (shown only on error) -->
+        <div class="hw-error-box" id="hw-error-box" style="display:none;">
+            <div class="hw-error-title"><i class="fas fa-exclamation-triangle"></i> Connection Error — What to do:</div>
+            <div class="hw-error-msg" id="hw-error-msg"></div>
+            <div class="hw-fix-steps">
+                <div class="hw-fix-step">
+                    <span class="hw-fix-num">1</span>
+                    <span><strong>Close Serial Monitor</strong> — it locks the COM port. Go to Arduino IDE &rarr; Tools, and close it.</span>
+                </div>
+                <div class="hw-fix-step">
+                    <span class="hw-fix-num">2</span>
+                    <span><strong>Close IDE completely</strong> if step 1 doesn't work. Then try connecting here again.</span>
+                </div>
+                <div class="hw-fix-step">
+                    <span class="hw-fix-num">3</span>
+                    <span><strong>Make sure the ESP32 code is uploaded first</strong> — open IDE, select the right COM port, upload the <code>esp32_steroid_sensor.ino</code> code, then try here. Ensure baud rate in code matches 115200.</span>
+                </div>
+                <div class="hw-fix-step">
+                    <span class="hw-fix-num">4</span>
+                    <span><strong>Unplug and re-plug the USB cable</strong>, then click <i class="fas fa-sync-alt"></i>
+                        Refresh and try again.</span>
+                </div>
+            </div>
+        </div>
+
+<!-- REAL-TIME MONITOR SECTION -->
+        <section class="rt-monitor-section" aria-labelledby="rt-monitor-heading">
+            <h2 id="rt-monitor-heading"><i class="fas fa-satellite-dish"></i> Real-Time Monitor</h2>
+
+            <!-- Live Sensor Chart + Gauges Row -->
+            <div class="rt-top-row">
+                <!-- Live Chart (NEW) -->
+                <div class="rt-chart-box" style="flex: 2; background: white; border-radius: 12px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); min-height: 200px; display: flex; flex-direction: column;">
+                    <div style="font-weight: 600; margin-bottom: 10px; color: var(--tm);"><i class="fas fa-wave-square"></i> Real-time Sensor Waveform</div>
+                    <canvas id="rt-waveform-canvas" style="flex: 1; width: 100%; height: 150px; border-radius: 8px; background: #f8f9fa;"></canvas>
+                    <div id="rt-signal" style="margin-top: 10px; font-size: 0.85rem; text-align: right; color: #757575;"></div>
+                </div>
+
+                <!-- Gauge Cards -->
+                <div class="rt-gauges-col" style="flex: 1;">
+                    <div class="rt-gauge-card" id="rt-gauge-ph">
+                        <div class="rt-gauge-icon"><i class="fas fa-tint"></i></div>
+                        <div class="rt-gauge-info">
+                            <span class="rt-gauge-label">pH Value</span>
+                            <span class="rt-gauge-val" id="rt-ph-val">--</span>
+                        </div>
+                        <div class="rt-gauge-ring">
+                            <svg viewBox="0 0 36 36">
+                                <circle class="rt-ring-bg" cx="18" cy="18" r="15" />
+                                <circle class="rt-ring-fill" id="rt-ring-fill-ph" cx="18" cy="18" r="15"
+                                    stroke-dasharray="0 94" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="rt-gauge-card">
+                        <div class="rt-gauge-icon"><i class="fas fa-thermometer-half"></i></div>
+                        <div class="rt-gauge-info">
+                            <span class="rt-gauge-label">Temperature</span>
+                            <span class="rt-gauge-val" id="rt-temp-val">-- °C</span>
+                        </div>
+                        <div class="rt-gauge-ring">
+                            <svg viewBox="0 0 36 36">
+                                <circle class="rt-ring-bg" cx="18" cy="18" r="15" />
+                                <circle class="rt-ring-fill" id="rt-ring-fill-temp" cx="18" cy="18" r="15"
+                                    stroke-dasharray="0 94" />
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <!-- NEW: TDS Gauge -->
+                    <div class="rt-gauge-card">
+                        <div class="rt-gauge-icon"><i class="fas fa-water"></i></div>
+                        <div class="rt-gauge-info">
+                            <span class="rt-gauge-label">TDS</span>
+                            <span class="rt-gauge-val" id="rt-tds-val">-- ppm</span>
+                        </div>
+                        <div class="rt-gauge-ring">
+                            <svg viewBox="0 0 36 36">
+                                <circle class="rt-ring-bg" cx="18" cy="18" r="15" />
+                                <circle class="rt-ring-fill" id="rt-ring-fill-tds" cx="18" cy="18" r="15"
+                                    stroke-dasharray="0 94" />
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <!-- NEW: Turbidity Gauge -->
+                    <div class="rt-gauge-card">
+                        <div class="rt-gauge-icon"><i class="fas fa-eye-slash"></i></div>
+                        <div class="rt-gauge-info">
+                            <span class="rt-gauge-label">Turbidity</span>
+                            <span class="rt-gauge-val" id="rt-turbidity-val">-- NTU</span>
+                        </div>
+                        <div class="rt-gauge-ring">
+                            <svg viewBox="0 0 36 36">
+                                <circle class="rt-ring-bg" cx="18" cy="18" r="15" />
+                                <circle class="rt-ring-fill" id="rt-ring-fill-turbidity" cx="18" cy="18" r="15"
+                                    stroke-dasharray="0 94" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- NEW: Color Gauge -->
+                    <div class="rt-gauge-card">
+                        <div class="rt-gauge-icon"><i class="fas fa-palette"></i></div>
+                        <div class="rt-gauge-info">
+                            <span class="rt-gauge-label">Color (Raw)</span>
+                            <span class="rt-gauge-val" id="rt-color-val">--</span>
+                        </div>
+                        <div class="rt-gauge-ring">
+                            <svg viewBox="0 0 36 36">
+                                <circle class="rt-ring-bg" cx="18" cy="18" r="15" />
+                                <circle class="rt-ring-fill" id="rt-ring-fill-color" cx="18" cy="18" r="15"
+                                    stroke-dasharray="0 94" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live stat counters row -->
+            <div class="rt-stats-row">
+                <div class="rt-stat-pill rt-pill-total">
+                    <i class="fas fa-database"></i>
+                    <div>
+                        <span class="rt-pill-label">Total Analyses</span>
+                        <span class="rt-pill-val" id="rt-cnt-total">--</span>
+                    </div>
+                </div>
+                <div class="rt-stat-pill rt-pill-safe">
+                    <i class="fas fa-check-circle"></i>
+                    <div>
+                        <span class="rt-pill-label">Safe Samples</span>
+                        <span class="rt-pill-val" id="rt-cnt-safe">--</span>
+                    </div>
+                </div>
+                <div class="rt-stat-pill rt-pill-danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>
+                        <span class="rt-pill-label">Danger Samples</span>
+                        <span class="rt-pill-val" id="rt-cnt-danger">--</span>
+                    </div>
+                </div>
+                <div class="rt-stat-pill rt-pill-progress">
+                    <i class="fas fa-chart-pie"></i>
+                    <div>
+                        <span class="rt-pill-label">Safety Rate</span>
+                        <span class="rt-pill-val" id="rt-cnt-pct">--%</span>
+                    </div>
+                    <div class="rt-progress-wrap">
+                        <div class="rt-progress-bar" id="rt-progress-bar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Location & Live Time Banner -->
+            <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; border-left: 5px solid #1976d2;">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <i class="fas fa-map-marked-alt" style="font-size: 2.5rem; color: #1976d2;"></i>
+                    <div id="live-loc-banner">
+                        <h4 style="margin: 0; color: #333; font-size: 1.15rem;">Acquiring Real-Time Location...</h4>
+                        <p style="margin: 5px 0 0; font-size: 0.95rem; color: #666; font-family: monospace;">
+                            <i class="fas fa-spinner fa-spin"></i> Please wait
+                        </p>
+                    </div>
+                </div>
+                <div style="text-align: right; background: #f8f9fa; padding: 10px 20px; border-radius: 8px; border: 1px solid #e0e0e0; min-width: 180px;">
+                    <div style="font-size: 0.85rem; color: #757575; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;"><i class="fas fa-clock"></i> Live System Time</div>
+                    <div id="rt-live-clock" style="font-size: 1.5rem; font-weight: 700; color: #2e7d32; font-family: monospace; letter-spacing: 2px;">--:--:--</div>
+                </div>
+            </div>
+            <!-- Recent Activity Feed -->
+            <div class="rt-feed-box">
+                <div class="rt-feed-header"><i class="fas fa-list-alt"></i> Recent Activity Feed</div>
+                <div class="rt-feed-list" id="rt-feed-list">
+                    <div class="rt-feed-empty"><i class="fas fa-satellite-dish"></i> Waiting for live data...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- HW Auto-Analyze Form -->
+        <div class="card" style="text-align:center; padding: 25px; margin-top: 25px;">
+            <h2 style="margin-bottom: 20px;"><i class="fas fa-microchip"></i> Hardware Sample Analysis</h2>
+            <p style="margin-bottom: 20px; color: var(--tm);">Place your sample on the sensor. When the live waveform stabilizes, click below to run the official analysis.</p>
+            
+            <form id="hw-analysis-form" method="post" action="/detection-testing">
+                <input type="hidden" id="live_sample" name="sample_type" value="milk">
+                <input type="hidden" id="live_sensor" name="sensor" value="">
+                <input type="hidden" id="live_weight" name="weight" value="1.0">
+                <input type="hidden" id="live_latitude" name="latitude" value="">
+                <input type="hidden" id="live_longitude" name="longitude" value="">
+                
+                <button type="button" class="btn-primary btn-large" onclick="submitLiveAnalysis()" style="font-size: 1.2rem; padding: 15px 30px; box-shadow: 0 4px 15px rgba(0, 191, 165, 0.4);">
+                    <i class="fas fa-play-circle"></i> Analyze Current Hardware Sample
+                </button>
+                <div id="location-status" style="margin-top: 10px; font-size: 0.9rem; color: #757575;">
+                    <i class="fas fa-map-marker-alt"></i> Acquiring location...
+                </div>
+            </form>
+            <div id="hw-submit-msg" style="margin-top: 15px; font-weight: 600; color: #00bfa5; display: none;">Capturing live data...</div>
+        </div>
+
+<!-- Result Card -->
+        {% if result %}
+        <div id="result-section" class="card result-card result-animate" role="region" aria-labelledby="result-heading">
+            <div class="result-header">
+                <h2 id="result-heading"><i class="fas fa-chart-pie" aria-hidden="true"></i> Analysis Result</h2>
+            </div>
+
+            <div class="result-grid">
+                <div class="result-item">
+                    <span class="result-label">Safe Dosage Limit</span>
+                    <span class="result-value" tabindex="0" aria-label="Safe dosage: {{ result.safe_dose }} mg">{{
+                        result.safe_dose }} mg</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Detected Steroid Level</span>
+                    <span class="result-value" tabindex="0"
+                        aria-label="Detected steroid level: {{ result.detected }} mg/L">{{ result.detected }}
+                        mg/L</span>
+                </div>
+
+                {% if result.ph_value is defined %}
+                <div class="result-item ph-result-item ph-{{ result.ph_status }}" style="grid-column: 1 / -1;">
+                    <span class="result-label"><i class="fas fa-tint" style="margin-right:5px;"></i>pH Value</span>
+                    <div class="ph-row">
+                        <span class="ph-number result-value" tabindex="0"
+                            aria-label="pH value: {{ result.ph_value }}">{{ result.ph_value }}</span>
+                        <span class="ph-badge">
+                            {% if result.ph_status == 'acidic' %}<i class="fas fa-arrow-down"></i>{% elif
+                            result.ph_status == 'alkaline' %}<i class="fas fa-arrow-up"></i>{% else %}<i
+                                class="fas fa-check-circle"></i>{% endif %}
+                            {{ result.ph_status | title }}
+                        </span>
+                    </div>
+                    <!-- pH Scale Bar -->
+                    <div class="ph-scale-wrap">
+                        <div class="ph-scale-bar">
+                            <div class="ph-marker" style="left: calc({{ result.ph_value }} / 14 * 100% - 11px);"></div>
+                        </div>
+                        <div class="ph-scale-labels">
+                            <span>0 Acidic</span>
+                            <span>7 Neutral</span>
+                            <span>14 Alkaline</span>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="status-section">
+                <p class="status-label">Safety Status:</p>
+                <div class="status-badge {{ result.level }}" role="status" aria-label="Safety status: {{ warning }}">
+                    <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
+                    {{ warning }}
+                </div>
+            </div>
+
+            {% if result.detected is not none %}
+            <div class="graph-container" role="region" aria-label="Steroid level trend graph">
+                <img src="{{ plot_url if plot_url else url_for('static', filename='steroid_graph.png') }}"
+                    alt="Steroid Level Analysis - Dynamic Graph showing detected level vs safe limit">
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Review Prompt Modal (Hidden by default, shown via JS if result exists) -->
+        {% if result %}
+        <div class="review-prompt" style="text-align: center; margin-top: 30px;">
+            <h3><i class="fas fa-clipboard-check"></i> Analysis Official Complete</h3>
+            <p>Would you like to download your report or submit to the community?</p>
+
+            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
+                <a href="/download_report" class="btn-primary btn-large" style="max-width: 300px; background: #455a64;">
+                    <i class="fas fa-file-pdf"></i> Download Official Report
+                </a>
+
+                <a href="/community-reviews?rating=5&message=Analysis Result: {{ result.detected }}mg/L ({{ result.level }}) - Sample Limit: {{ result.safe_dose }}mg"
+                    class="btn-primary btn-large" style="max-width: 300px;">
+                    <i class="fas fa-share-square"></i> Submit to Review
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        <footer role="contentinfo">
+            <p><i class="fas fa-heartbeat" aria-hidden="true"></i> Protecting Public Health with Smart Technology</p>
+        </footer>
+    </div>
+
+    {% if result %}
+    <script>
+        // Smooth scroll to results when page loads with a result
+        window.addEventListener('DOMContentLoaded', (event) => {
+            const resultSection = document.getElementById('result-section');
+            if (resultSection) {
+                // Small delay to ensure everything is rendered
+                setTimeout(() => {
+                    resultSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }, 100);
+            }
+        });
+    </script>
+    {% endif %}
+
+<script>
+        // ============================================================
+        // REAL-TIME DATA ENGINE
+        // ============================================================
+
+        // -- Sensor stream polling every 1.5 s --
+        function pollSensorStream() {
+            fetch('/api/sensor-stream')
+                .then(r => r.json())
+                .then(d => {
+                    updateSensorGauges(d);
+                })
+                .catch(() => {});
+        }
+
+        function updateSensorGauges(d) {
+            setText('rt-ph-val', d.ph_value);
+            setText('rt-temp-val', d.temperature + ' °C');
+            setText('rt-tds-val', d.tds + ' ppm');
+            setText('rt-turbidity-val', d.turbidity + ' NTU');
+            setText('rt-color-val', d.color);
+
+            setRing('rt-ring-fill-ph', d.ph_value, 14);
+            setRing('rt-ring-fill-temp', d.temperature, 40);       // max display 40°C
+            setRing('rt-ring-fill-tds', d.tds, 1000);              // max 1000 ppm
+            setRing('rt-ring-fill-turbidity', d.turbidity, 3000);  // max 3000 NTU
+            setRing('rt-ring-fill-color', d.color, 4095);          // max 4095 ADC
+        }
+
+        function setRing(id, val, max) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const pct = Math.min(val / max, 1);
+            const circ = 94; // 2*pi*r = 2*3.14*15 ≈ 94
+            el.setAttribute('stroke-dasharray', (pct * circ).toFixed(1) + ' ' + circ);
+        }
+
+        // -- Dashboard stats polling every 3 s --
+        function pollRealtimeData() {
+            fetch('/api/realtime-data')
+                .then(r => r.json())
+                .then(d => {
+                    // Ticker
+                    setText('rt-time', '🕐 ' + d.server_time);
+                    const totalEl = document.getElementById('rt-total');
+                    if (totalEl) totalEl.innerHTML = '<i class="fas fa-flask-vial"></i> Analyses: <strong>' + d.total_analyses + '</strong>';
+                    const safeEl = document.getElementById('rt-safe-pct');
+                    if (safeEl) safeEl.innerHTML = '<i class="fas fa-shield-check"></i> Safe Rate: <strong>' + d.safe_percentage + '%</strong>';
+                    const ratingEl = document.getElementById('rt-rating');
+                    if (ratingEl) ratingEl.innerHTML = '<i class="fas fa-star"></i> Rating: <strong>' + d.avg_rating + '/5</strong>';
+
+                    // Live counter pills
+                    animateCount('rt-cnt-total', d.total_analyses);
+                    animateCount('rt-cnt-safe', d.safe_count);
+                    animateCount('rt-cnt-danger', d.danger_count);
+                    setText('rt-cnt-pct', d.safe_percentage + '%');
+
+                    // Progress bar
+                    const bar = document.getElementById('rt-progress-bar');
+                    if (bar) bar.style.width = d.safe_percentage + '%';
+
+                    // Recent feed
+                    updateFeed(d.recent_analyses);
+                })
+                .catch(() => {
+                    const statusEl = document.getElementById('rt-status-label');
+                    if (statusEl) statusEl.innerHTML = '<i class="fas fa-satellite-dish"></i> System: <strong class="rt-err">RECONNECTING...</strong>';
+                });
+        }
+
+        function updateFeed(items) {
+            const list = document.getElementById('rt-feed-list');
+            if (!list || !items.length) return;
+            list.innerHTML = items.map(item => {
+                const icon = item.level === 'safe' ? 'fa-check-circle rt-icon-safe'
+                    : item.level === 'danger' ? 'fa-exclamation-circle rt-icon-danger'
+                        : 'fa-exclamation-triangle rt-icon-caution';
+                const phText = item.ph_value ? ` | pH: ${item.ph_value}` : '';
+                return `<div class="rt-feed-item">
+            <i class="fas ${icon}"></i>
+            <div class="rt-feed-details">
+                <span class="rt-feed-title">${capitalize(item.sample_type)} — ${item.detected_level} mg/L${phText}</span>
+                <span class="rt-feed-meta">${item.timestamp} &bull; ${item.user || 'Anonymous'}</span>
+            </div>
+            <span class="rt-feed-badge rt-badge-${item.level}">${item.level.toUpperCase()}</span>
+        </div>`;
+            }).join('');
+        }
+
+        // Utilities
+        function setText(id, val) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = val;
+        }
+        function capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+
+        function animateCount(id, target) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const start = parseInt(el.textContent) || 0;
+            if (start === target) return;
+            const step = (target - start) / 20;
+            let current = start;
+            const timer = setInterval(() => {
+                current += step;
+                if ((step > 0 && current >= target) || (step < 0 && current <= target)) {
+                    el.textContent = target;
+                    clearInterval(timer);
+                } else {
+                    el.textContent = Math.round(current);
+                }
+            }, 30);
+        }
+
+        // ── Hardware Connect Functions ───────────────────────────
+        function loadPorts() {
+            fetch('/api/serial-ports')
+                .then(r => r.json())
+                .then(d => {
+                    const sel = document.getElementById('hw-port-select');
+                    if (!sel) return;
+                    if (d.error) {
+                        sel.innerHTML = `<option value="">${d.error}</option>`;
+                        return;
+                    }
+                    if (!d.ports.length) {
+                        sel.innerHTML = '<option value="">No COM ports found</option>';
+                        return;
+                    }
+                    sel.innerHTML = d.ports.map(p =>
+                        `<option value="${p.port}">${p.port} — ${p.description}</option>`
+                    ).join('');
+                })
+                .catch(() => {
+                    const sel = document.getElementById('hw-port-select');
+                    if (sel) sel.innerHTML = '<option value="">Error scanning ports</option>';
+                });
+        }
+
+        function hwConnect() {
+            const sel = document.getElementById('hw-port-select');
+            const port = sel ? sel.value : '';
+            if (!port) { alert('Please select a COM port first.'); return; }
+
+            const btn = document.getElementById('hw-connect-btn');
+            if (btn) { btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting...'; btn.disabled = true; }
+
+            fetch('/api/connect-serial', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ port: port, baud: 115200 })
+            })
+                .then(r => r.json())
+                .then(d => {
+                    if (btn) { btn.innerHTML = '<i class="fas fa-plug"></i> Connect'; btn.disabled = false; }
+                    if (d.success) {
+                        setHwUI('connecting', `Connecting to ${port}...`);
+                        // Give it 2 seconds then check status
+                        setTimeout(pollHardwareStatus, 2000);
+                    } else {
+                        setHwUI('error', d.error || 'Connection failed');
+                    }
+                })
+                .catch(() => {
+                    if (btn) { btn.innerHTML = '<i class="fas fa-plug"></i> Connect'; btn.disabled = false; }
+                    setHwUI('error', 'Could not reach server');
+                });
+        }
+
+        function hwDisconnect() {
+            fetch('/api/disconnect-serial', { method: 'POST' })
+                .then(r => r.json())
+                .then(() => { setHwUI('disconnected', 'Disconnected'); })
+                .catch(() => { });
+        }
+
+        function pollHardwareStatus() {
+            fetch('/api/hardware-status')
+                .then(r => r.json())
+                .then(d => {
+                    if (!d.serial_available) {
+                        setHwUI('error', 'pyserial not installed — run: pip install pyserial');
+                        return;
+                    }
+                    if (d.connected && !d.stale && d.latest_reading) {
+                        const r = d.latest_reading;
+                        setHwUI('connected', `Connected on ${d.port} | pH: ${r.ph} | Temp: ${r.temp}°C`);
+                    } else if (d.connected && d.stale) {
+                        setHwUI('connecting', `${d.port} — waiting for data...`);
+                    } else if (d.error) {
+                        setHwUI('error', d.error);
+                    } else {
+                        setHwUI('disconnected', 'Not connected');
+                    }
+                })
+                .catch(() => { });
+        }
+
+        function setHwUI(state, message) {
+            const dot = document.getElementById('hw-status-dot');
+            const label = document.getElementById('hw-sublabel');
+            const cBtn = document.getElementById('hw-connect-btn');
+            const dBtn = document.getElementById('hw-disconnect-btn');
+            const ticker = document.getElementById('rt-status-label');
+            const errBox = document.getElementById('hw-error-box');
+            const errMsg = document.getElementById('hw-error-msg');
+            const modeBadge = document.getElementById('hw-mode-badge');
+            const panel = document.getElementById('hw-panel');
+
+            if (label) label.textContent = message;
+            if (dot) dot.className = 'hw-status-dot hw-dot-' + state;
+
+            // Error box
+            if (errBox) {
+                if (state === 'error') {
+                    errBox.style.display = 'block';
+                    if (errMsg) errMsg.textContent = '⚠️  Error: ' + message;
+                } else {
+                    errBox.style.display = 'none';
+                }
+            }
+
+            // Panel border highlight
+            if (panel) {
+                panel.style.borderColor =
+                    state === 'connected' ? 'rgba(76,175,80,0.4)' :
+                        state === 'error' ? 'rgba(244,67,54,0.4)' :
+                            state === 'connecting' ? 'rgba(255,152,0,0.4)' :
+                                '';
+            }
+
+            if (state === 'connected') {
+                if (cBtn) cBtn.style.display = 'none';
+                if (dBtn) dBtn.style.display = 'inline-flex';
+                if (ticker) ticker.innerHTML = '<i class="fas fa-satellite-dish"></i> Hardware: <strong class="rt-ok">CONNECTED</strong>';
+                if (modeBadge) {
+                    modeBadge.className = 'hw-src-badge hw-src-real';
+                    modeBadge.innerHTML = '<i class="fas fa-microchip"></i> HARDWARE';
+                }
+            } else {
+                if (cBtn) cBtn.style.display = 'inline-flex';
+                if (dBtn) dBtn.style.display = 'none';
+                if (modeBadge) {
+                    modeBadge.className = 'hw-src-badge hw-src-sim';
+                    modeBadge.innerHTML = '<i class="fas fa-wave-square"></i> SIMULATION';
+                }
+                if (ticker && state === 'error') {
+                    ticker.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Hardware: <strong class="rt-err">ERROR</strong>';
+                } else if (ticker) {
+                    ticker.innerHTML = '<i class="fas fa-satellite-dish"></i> System: <strong class="rt-ok">ONLINE</strong>';
+                }
+            }
+        }
+
+        // Update waveform footer with source badge
+        const _origPollSensor = pollSensorStream;
+        
+        let waveformData = [];
+        const MAX_WAVEFORM_PTS = 50;
+
+        function pushWaveform(d) {
+            waveformData.push({
+                val: parseFloat(d.sensor_reading) || 0,
+                time: String(d.unix_time)
+            });
+            if (waveformData.length > MAX_WAVEFORM_PTS) {
+                waveformData.shift();
+            }
+            drawWaveform();
+        }
+
+        function drawWaveform() {
+            const canvas = document.getElementById('rt-waveform-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            // Handle resizing
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width - 30; // approx padding
+            canvas.height = 150;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            if (waveformData.length < 2) return;
+            
+            const w = canvas.width;
+            const h = canvas.height;
+            const stepX = w / (MAX_WAVEFORM_PTS - 1);
+            
+            let maxVal = 0.1; // fallback max
+            for(let pt of waveformData) if(pt.val > maxVal) maxVal = pt.val;
+            maxVal *= 1.2; // 20% headroom
+            
+            ctx.beginPath();
+            ctx.strokeStyle = '#00bfa5';
+            ctx.lineWidth = 2;
+            
+            for(let i=0; i<waveformData.length; i++) {
+                const pt = waveformData[i];
+                const x = i * stepX;
+                const y = h - (pt.val / maxVal * h);
+                if(i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+            
+            // Fill area
+            ctx.lineTo(waveformData.length * stepX - stepX, h);
+            ctx.lineTo(0, h);
+            ctx.fillStyle = 'rgba(0, 191, 165, 0.1)';
+            ctx.fill();
+        }
+
+        function pollSensorStream() {
+            fetch('/api/sensor-stream')
+                .then(r => r.json())
+                .then(d => {
+                    updateSensorGauges(d);
+                    pushWaveform(d);
+                    // Source badge
+                    const sigEl = document.getElementById('rt-signal');
+                    if (sigEl) {
+                        const isHW = d.source === 'hardware';
+                        sigEl.innerHTML = isHW
+                            ? '<span class="hw-src-badge hw-src-real"><i class="fas fa-microchip"></i> HARDWARE</span> &nbsp; ⚡ ' + d.signal_strength + '%'
+                            : '<span class="hw-src-badge hw-src-sim"><i class="fas fa-wave-square"></i> SIMULATION</span>';
+                    }
+                })
+                .catch(() => { });
+        }
+
+        // Start polling
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPorts();
+            pollRealtimeData();
+            pollSensorStream();
+            pollHardwareStatus();
+            setInterval(pollRealtimeData, 3000);
+            setInterval(pollSensorStream, 1500);
+            setInterval(pollHardwareStatus, 2000);
+            
+            // Standard Form Live Clock Update
+            setInterval(() => {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' });
+                const clockEl = document.getElementById('rt-live-clock');
+                if (clockEl) clockEl.textContent = timeString;
+            }, 1000);
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const latInput = document.getElementById('live_latitude');
+            const lngInput = document.getElementById('live_longitude');
+            const locStatus = document.getElementById('location-status');
+            const locBanner = document.getElementById('live-loc-banner');
+            
+            if (navigator.geolocation) {
+                if (locStatus) locStatus.innerHTML = '<i class="fas fa-spinner fa-spin" style="color: #1976d2;"></i> Acquiring Real-Time Location...';
+                
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        if (latInput) latInput.value = position.coords.latitude;
+                        if (lngInput) lngInput.value = position.coords.longitude;
+                        if (locStatus) {
+                            locStatus.innerHTML = `<i class="fas fa-map-marker-alt" style="color: #2e7d32;"></i> Location Ready (${position.coords.latitude.toFixed(4)}, ${position.coords.longitude.toFixed(4)})`;
+                        }
+                        if (locBanner) {
+                            locBanner.innerHTML = `
+                                <h4 style="margin: 0; color: #333; font-size: 1.15rem;">Live Location Secured</h4>
+                                <p style="margin: 5px 0 0; font-size: 0.95rem; color: #666; font-family: monospace;">
+                                    <i class="fas fa-compass"></i> Lat: ${position.coords.latitude.toFixed(6)} &nbsp;|&nbsp; Lng: ${position.coords.longitude.toFixed(6)}
+                                </p>
+                            `;
+                        }
+                    },
+                    (error) => {
+                        console.warn("Geolocation error:", error);
+                        // Fallback to default if error
+                        if (latInput) latInput.value = 11.0809615;
+                        if (lngInput) lngInput.value = 76.9983231;
+                        if (locStatus) locStatus.innerHTML = '<i class="fas fa-exclamation-triangle" style="color: #f57f17;"></i> Location Error (Using Default)';
+                        if (locBanner) {
+                            locBanner.innerHTML = `
+                                <h4 style="margin: 0; color: #333; font-size: 1.15rem;">KGiSL Institute of Technology (Default)</h4>
+                                <p style="margin: 5px 0 0; font-size: 0.95rem; color: #666; font-family: monospace;">
+                                    <i class="fas fa-compass"></i> Lat: 11.0809615 &nbsp;|&nbsp; Lng: 76.9983231
+                                </p>
+                            `;
+                        }
+                    },
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                );
+            } else {
+                if (latInput) latInput.value = 11.0809615;
+                if (lngInput) lngInput.value = 76.9983231;
+                if (locStatus) locStatus.innerHTML = '<i class="fas fa-map-marker-alt" style="color: #9e9e9e;"></i> Location Not Supported by Browser';
+            }
+        });
+
+        function submitLiveAnalysis() {
+            if (typeof waveformData !== "undefined" && waveformData.length > 0) {
+                const latest = waveformData[waveformData.length - 1];
+                document.getElementById('live_sensor').value = latest.val;
+            } else {
+                document.getElementById('live_sensor').value = 0;
+            }
+            
+            const sampleLabel = document.getElementById('rt-sample-label');
+            const sampleText = sampleLabel ? sampleLabel.textContent.toLowerCase() : 'milk';
+            if (sampleText.includes('meat')) document.getElementById('live_sample').value = 'meat';
+            else if (sampleText.includes('water')) document.getElementById('live_sample').value = 'water';
+            else document.getElementById('live_sample').value = 'milk';
+            
+            document.getElementById('hw-submit-msg').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('hw-analysis-form').submit();
+            }, 100);
+        }
+    </script>
+</body>
+
+</html>

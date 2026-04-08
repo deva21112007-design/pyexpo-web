@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Reviews - PureCheck and Quality Analysis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=lighttheme">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+    <div class="main-container">
+        <header role="banner">
+            <div class="header-content">
+                <h1><i class="fas fa-shield-alt" aria-hidden="true"></i> PureCheck and Quality Analysis</h1>
+                <p>Ensuring safe milk and meat for human consumption</p>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="navbar" role="navigation" aria-label="Main navigation">
+            <ul class="nav-links">
+                <li><a href="/" aria-label="Go to Safety Dashboard"><i class="fas fa-chart-line" aria-hidden="true"></i>
+                        Safety Dashboard</a></li>
+                <li><a href="/detection-testing" aria-label="Go to Detection Testing page"><i class="fas fa-flask"
+                            aria-hidden="true"></i> Detection Testing</a></li>
+                <li><a href="/community-reviews" class="active" aria-current="page"><i class="fas fa-star"
+                            aria-hidden="true"></i> Community Reviews</a></li>
+                <li><a href="/simulation" aria-label="Go to Simulation page"><i class="fas fa-microchip"
+                            aria-hidden="true"></i> Simulation</a></li>
+                <!-- Theme Toggle Button -->
+                <li>
+                    <button id="theme-toggle" class="theme-btn" aria-label="Toggle Dark Mode"
+                        style="background: transparent; border: 1px solid var(--p); color: var(--p); padding: 8px 15px; width: auto; display: flex; align-items: center; justify-content: center; border-radius: 20px; cursor: pointer; transition: all 0.3s ease;">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </li>
+            </ul>
+        </nav>
+
+        <script>
+            // Theme Toggle Logic
+            document.addEventListener('DOMContentLoaded', () => {
+                const toggleBtn = document.getElementById('theme-toggle');
+                const icon = toggleBtn.querySelector('i');
+                const body = document.body;
+
+                // Check saved preference
+                const currentTheme = localStorage.getItem('theme');
+                if (currentTheme === 'dark') {
+                    body.classList.add('dark-mode');
+                    icon.classList.remove('fa-moon');
+                    icon.classList.add('fa-sun');
+                }
+
+                toggleBtn.addEventListener('click', () => {
+                    body.classList.toggle('dark-mode');
+
+                    if (body.classList.contains('dark-mode')) {
+                        localStorage.setItem('theme', 'dark');
+                        icon.classList.remove('fa-moon');
+                        icon.classList.add('fa-sun');
+                    } else {
+                        localStorage.setItem('theme', 'light');
+                        icon.classList.remove('fa-sun');
+                        icon.classList.add('fa-moon');
+                    }
+                });
+            });
+        </script>
+
+        <!-- Review Form Card -->
+        <div class="card feedback-card" role="region" aria-labelledby="feedback-heading">
+            <h2 id="feedback-heading"><i class="fas fa-pen-fancy" aria-hidden="true"></i> Share Your Experience</h2>
+            <p class="feedback-subtitle">Help us improve by sharing your feedback</p>
+
+            {% if success_message %}
+            <div class="alert alert-success" role="alert">
+                <i class="fas fa-check-circle" aria-hidden="true"></i> {{ success_message }}
+            </div>
+            {% endif %}
+
+            {% if error_message %}
+            <div class="alert alert-error" role="alert">
+                <i class="fas fa-times-circle" aria-hidden="true"></i> {{ error_message }}
+            </div>
+            {% endif %}
+
+            <form method="post" class="feedback-form">
+                <div class="form-group">
+                    <label for="name"><i class="fas fa-user" aria-hidden="true"></i> Name</label>
+                    <input type="text" id="name" name="name" placeholder="Your name" required aria-label="Your name">
+                </div>
+
+                <div class="form-group">
+                    <label for="email"><i class="fas fa-envelope" aria-hidden="true"></i> Email</label>
+                    <input type="email" id="email" name="email" placeholder="your@email.com" required
+                        aria-label="Your email address">
+                </div>
+
+                <div class="form-group">
+                    <label for="rating"><i class="fas fa-star" aria-hidden="true"></i> Rate Your Experience</label>
+                    <select id="rating" name="rating" required aria-label="Rate your experience with the system">
+                        <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+                        <option value="4">⭐⭐⭐⭐ Good</option>
+                        <option value="3">⭐⭐⭐ Average</option>
+                        <option value="2">⭐⭐ Poor</option>
+                        <option value="1">⭐ Very Poor</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="message"><i class="fas fa-pen" aria-hidden="true"></i> Your Feedback</label>
+                    <textarea id="message" name="message" rows="6" placeholder="Tell us what you think..." required
+                        aria-label="Your detailed feedback"></textarea>
+                </div>
+
+                <button type="submit" class="btn-primary" aria-label="Submit your feedback">
+                    <i class="fas fa-paper-plane" aria-hidden="true"></i> Submit Review
+                </button>
+            </form>
+        </div>
+
+        <!-- Community Reviews Display -->
+        {% if feedback_list %}
+        <section id="reviews-display" class="community-reviews-section" aria-labelledby="reviews-heading">
+            <h2 id="reviews-heading"><i class="fas fa-comments" aria-hidden="true"></i> Community Feedback ({{
+                feedback_list|length }} Reviews)</h2>
+
+            <div class="reviews-list">
+                {% for review in feedback_list|reverse %}
+                <div class="review-card" role="article">
+                    <div class="review-header">
+                        <div class="review-user">
+                            <h4 class="review-name">{{ review.name }}</h4>
+                            <p class="review-timestamp">
+                                <i class="fas fa-calendar" aria-hidden="true"></i> {{ review.timestamp }}
+                                {% if review.sentiment %}
+                                <span class="sentiment-badge sentiment-{{ review.sentiment|lower }}">
+                                    <i
+                                        class="fas {{ 'fa-smile' if review.sentiment == 'Positive' else ('fa-frown' if review.sentiment == 'Negative' else 'fa-meh') }}"></i>
+                                    {{ review.sentiment }}
+                                </span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="review-rating" role="status" aria-label="Rating: {{ review.rating }} out of 5">
+                            {% for i in range(review.rating|int) %}
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            {% endfor %}
+                            {% for i in range(5 - review.rating|int) %}
+                            <i class="far fa-star" aria-hidden="true"></i>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <p class="review-message">{{ review.message }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% else %}
+        <section class="no-reviews-section" role="region" aria-label="No reviews yet">
+            <p><i class="fas fa-inbox" aria-hidden="true"></i> No reviews yet. Be the first to share your feedback!</p>
+        </section>
+        {% endif %}
+
+        <footer role="contentinfo">
+            <p><i class="fas fa-heartbeat" aria-hidden="true"></i> Protecting Public Health with Smart Technology</p>
+        </footer>
+    </div>
+
+    <script>
+        // Pre-fill form from URL parameters (e.g. from detection testing result)
+        window.addEventListener('DOMContentLoaded', (event) => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const rating = urlParams.get('rating');
+            const message = urlParams.get('message');
+
+            if (rating) {
+                const ratingSelect = document.getElementById('rating');
+                if (ratingSelect) ratingSelect.value = rating;
+            }
+
+            if (message) {
+                const messageTextarea = document.getElementById('message');
+                if (messageTextarea) messageTextarea.value = message;
+            }
+        });
+    </script>
+</body>
+
+</html>
